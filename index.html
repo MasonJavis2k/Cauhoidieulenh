@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0d1b2a">
+<title>200 Câu hỏi Điều lệnh CAND</title>
+<link href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@400;600;700&family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:   #0d1b2a;
+  --navy2:  #1a2d42;
+  --gold:   #f0a500;
+  --gold2:  #ffc53d;
+  --red:    #c0392b;
+  --green:  #27ae60;
+  --green2: #2ecc71;
+  --blue:   #2980b9;
+  --blue2:  #3498db;
+  --grey:   #8899aa;
+  --light:  #e8edf2;
+  --white:  #ffffff;
+  --card:   #162232;
+  --border: rgba(255,255,255,0.07);
+  --radius: 14px;
+  --font-main: 'Be Vietnam Pro', sans-serif;
+  --font-display: 'Bai Jamjuree', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%; width: 100%;
+  font-family: var(--font-main);
+  background: var(--navy);
+  color: var(--white);
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+  /* iOS Safari fix */
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  touch-action: manipulation;
+}
+
+/* ══════════════════════════ SCREEN MANAGER ══════════════════════════ */
+#app { width: 100%; height: 100%; position: relative; overflow: hidden; }
+
+.screen {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
+  will-change: transform;
+  overflow: hidden;
+  /* iOS Safari: enable touch on all screen elements */
+  -webkit-user-select: none;
+  user-select: none;
+}
+.screen.active  { transform: translateX(0); }
+.screen.leaving { transform: translateX(-35%); }
+
+/* ══════════════════════════ SCROLLABLE BODY ══════════════════════════ */
+.scroll-body {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  padding: 16px 16px 32px;
+  touch-action: pan-y;
+}
+
+/* ══════════════════════════ TOP BAR ══════════════════════════ */
+.topbar {
+  background: var(--navy2);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 16px;
+  min-height: 56px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+}
+.topbar-title {
+  font-family: var(--font-display);
+  font-size: 15px; font-weight: 700;
+  color: var(--gold); letter-spacing: 0.4px;
+  flex: 1; text-align: center;
+}
+.btn-icon {
+  background: none; border: none;
+  color: var(--grey); font-size: 22px;
+  cursor: pointer; padding: 4px 6px;
+  border-radius: 8px;
+  transition: color 0.15s, background 0.15s;
+  min-width: 36px; min-height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-icon:active { background: rgba(255,255,255,0.08); color: var(--white); }
+
+/* ══════════════════════════ MENU SCREEN ══════════════════════════ */
+#menu-screen {
+  background: var(--navy);
+}
+.menu-hero {
+  text-align: center;
+  padding: 32px 20px 24px;
+}
+.menu-badge {
+  display: inline-block;
+  background: var(--gold);
+  color: var(--navy);
+  font-size: 10px; font-weight: 800;
+  letter-spacing: 2px;
+  padding: 4px 12px; border-radius: 20px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.menu-title {
+  font-family: var(--font-display);
+  font-size: 26px; font-weight: 700;
+  line-height: 1.3;
+  background: linear-gradient(135deg, var(--gold2), var(--gold));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 6px;
+}
+.menu-sub {
+  font-size: 12px; color: var(--grey); letter-spacing: 0.3px;
+}
+
+.menu-buttons { display: flex; flex-direction: column; gap: 12px; padding: 0 16px; }
+
+.btn-main {
+  display: flex; align-items: center; gap: 14px;
+  padding: 18px 20px; border-radius: var(--radius);
+  border: none; cursor: pointer;
+  font-family: var(--font-main); font-size: 15px; font-weight: 700;
+  color: var(--white); text-align: left;
+  position: relative; overflow: hidden;
+  transition: transform 0.12s, box-shadow 0.12s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-main::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: rgba(255,255,255,0.0);
+  transition: background 0.15s;
+}
+.btn-main:active { transform: scale(0.97); }
+.btn-main:active::after { background: rgba(255,255,255,0.08); }
+
+.btn-main .btn-icon-big { font-size: 22px; flex-shrink: 0; }
+.btn-main .btn-label { flex: 1; }
+.btn-main .btn-arrow { color: rgba(255,255,255,0.4); font-size: 16px; }
+
+.btn-exam    { background: linear-gradient(135deg, #c0392b, #922b21); box-shadow: 0 4px 20px rgba(192,57,43,0.4); }
+.btn-all     { background: linear-gradient(135deg, #1a6b3c, #27ae60); box-shadow: 0 4px 20px rgba(39,174,96,0.3); }
+.btn-admin   { background: linear-gradient(135deg, #1a5276, #2980b9); box-shadow: 0 4px 20px rgba(41,128,185,0.3); }
+.btn-update  { background: linear-gradient(135deg, #7d5a00, #f0a500); box-shadow: 0 4px 20px rgba(240,165,0,0.25); }
+.btn-settings { background: linear-gradient(135deg, #1c2833, #2c3e50); border: 1px solid var(--border); box-shadow: none; }
+
+.menu-footer {
+  margin: 20px 16px 16px;
+  padding: 12px 16px;
+  background: var(--card); border-radius: var(--radius);
+  border: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.menu-footer-text { font-size: 11px; color: var(--grey); }
+.version-badge { font-size: 10px; color: var(--gold); font-weight: 600; }
+
+/* ══════════════════════════ QUIZ SCREEN ══════════════════════════ */
+#quiz-screen { background: var(--navy); }
+
+.quiz-progress-bar {
+  height: 3px; background: var(--border);
+  flex-shrink: 0;
+}
+.quiz-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--blue2), var(--gold));
+  transition: width 0.4s ease;
+}
+
+.quiz-meta {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px 16px 4px;
+  font-size: 12px; color: var(--grey);
+  flex-shrink: 0;
+}
+.quiz-counter { font-weight: 600; }
+#timer-display {
+  font-family: var(--font-display);
+  font-size: 16px; font-weight: 700;
+  color: var(--gold2);
+  letter-spacing: 1px;
+}
+#timer-display.warning { color: #e74c3c; animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
+
+.feedback-bar {
+  text-align: center; padding: 6px 16px;
+  font-size: 15px; font-weight: 700;
+  min-height: 32px; flex-shrink: 0;
+  transition: color 0.2s;
+}
+
+.question-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 14px;
+  font-size: 16px; font-weight: 600;
+  line-height: 1.6; color: var(--white);
+}
+
+.options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+
+.option-btn {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 14px 16px;
+  background: var(--card); border: 2px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer; text-align: left;
+  font-family: var(--font-main); font-size: 14px; font-weight: 500;
+  color: var(--white); line-height: 1.5;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+.option-btn:active { transform: scale(0.98); }
+.option-letter {
+  flex-shrink: 0;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-size: 13px; font-weight: 700;
+  transition: background 0.15s, color 0.15s;
+}
+.option-text { flex: 1; }
+
+.option-btn.selected {
+  border-color: var(--blue2);
+  background: rgba(52,152,219,0.12);
+}
+.option-btn.selected .option-letter { background: var(--blue2); color: var(--white); }
+
+.option-btn.correct {
+  border-color: var(--green2);
+  background: rgba(46,204,113,0.12);
+}
+.option-btn.correct .option-letter { background: var(--green2); color: var(--white); }
+
+.option-btn.wrong {
+  border-color: var(--red);
+  background: rgba(192,57,43,0.12);
+}
+.option-btn.wrong .option-letter { background: var(--red); color: var(--white); }
+
+.option-btn.disabled { pointer-events: none; }
+
+.quiz-actions { display: flex; gap: 10px; flex-shrink: 0; padding: 0 16px 16px; }
+
+.btn-action {
+  flex: 1; padding: 14px;
+  border: none; border-radius: var(--radius);
+  font-family: var(--font-main); font-size: 14px; font-weight: 700;
+  cursor: pointer; color: var(--white);
+  transition: transform 0.1s, opacity 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-action:active { transform: scale(0.96); }
+.btn-action.primary  { background: linear-gradient(135deg, var(--blue), var(--blue2)); }
+.btn-action.success  { background: linear-gradient(135deg, #1a6b3c, var(--green)); }
+.btn-action.muted    { background: var(--navy2); border: 1px solid var(--border); }
+.btn-action.warning  { background: linear-gradient(135deg, #7d5a00, var(--gold)); color: var(--navy); }
+.btn-action.danger   { background: linear-gradient(135deg, #922b21, var(--red)); }
+
+/* All-mode nav row */
+.all-nav { display: flex; gap: 8px; padding: 8px 16px; flex-shrink: 0; }
+.all-nav .btn-action { font-size: 13px; padding: 10px 8px; }
+
+/* ══════════════════════════ REVIEW SCREEN ══════════════════════════ */
+#review-screen { background: var(--navy); }
+
+.result-hero {
+  text-align: center;
+  padding: 24px 20px 16px;
+  flex-shrink: 0;
+}
+.result-status {
+  font-family: var(--font-display);
+  font-size: 42px; font-weight: 700;
+  margin-bottom: 8px;
+}
+.result-score {
+  font-size: 16px; font-weight: 700;
+  color: var(--gold);
+}
+.result-sub { font-size: 12px; color: var(--grey); margin-top: 4px; }
+
+.review-item {
+  background: var(--card); border-radius: var(--radius);
+  border-left: 4px solid var(--border);
+  padding: 14px 14px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: transform 0.1s;
+  -webkit-tap-highlight-color: transparent;
+}
+.review-item:active { transform: scale(0.99); }
+.review-item.correct { border-left-color: var(--green2); }
+.review-item.wrong   { border-left-color: var(--red); }
+
+.review-q { font-size: 13px; font-weight: 600; line-height: 1.5; margin-bottom: 6px; }
+.review-ans { font-size: 12px; color: var(--grey); line-height: 1.5; }
+.review-tag {
+  display: inline-block; font-size: 10px; font-weight: 700;
+  padding: 2px 8px; border-radius: 10px; margin-bottom: 6px;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.review-tag.correct { background: rgba(46,204,113,0.2); color: var(--green2); }
+.review-tag.wrong   { background: rgba(192,57,43,0.2); color: #e74c3c; }
+
+/* ══════════════════════════ ADMIN SCREEN ══════════════════════════ */
+#admin-screen { background: var(--navy); }
+
+.search-row {
+  display: flex; gap: 8px;
+  padding: 10px 16px; flex-shrink: 0;
+}
+.search-input {
+  flex: 1; background: var(--card);
+  border: 1px solid var(--border); border-radius: 10px;
+  color: var(--white); font-family: var(--font-main);
+  font-size: 14px; padding: 10px 14px;
+  outline: none;
+}
+.search-input::placeholder { color: var(--grey); }
+.search-input:focus { border-color: var(--blue2); }
+
+.q-list { display: flex; flex-direction: column; gap: 6px; }
+.q-row {
+  background: var(--card); border-radius: 10px;
+  border: 1px solid var(--border);
+  padding: 12px 14px;
+  cursor: pointer; display: flex; align-items: center; gap: 10px;
+  transition: border-color 0.15s, background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.q-row:active { background: rgba(41,128,185,0.15); }
+.q-row.selected { border-color: var(--blue2); background: rgba(41,128,185,0.1); }
+.q-num {
+  font-family: var(--font-display); font-size: 13px;
+  font-weight: 700; color: var(--gold);
+  min-width: 28px;
+}
+.q-text { flex: 1; font-size: 12px; color: var(--light); line-height: 1.4; }
+.q-ans {
+  font-family: var(--font-display); font-size: 13px; font-weight: 700;
+  color: var(--green2);
+}
+
+.form-panel {
+  background: var(--card); border-top: 1px solid var(--border);
+  padding: 0;
+  flex-shrink: 0;
+  transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1);
+  overflow: hidden;
+}
+.form-panel-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.form-panel-header:active { background: rgba(255,255,255,0.04); }
+.form-panel-toggle-icon {
+  font-size: 13px; color: var(--grey);
+  transition: transform 0.3s ease;
+  display: inline-block;
+}
+.form-panel.open .form-panel-toggle-icon { transform: rotate(180deg); }
+.form-panel-body {
+  padding: 0 16px 16px;
+  display: none;
+}
+.form-panel.open .form-panel-body { display: block; }
+.form-section-title {
+  font-size: 12px; font-weight: 700; color: var(--gold);
+  letter-spacing: 1px; text-transform: uppercase;
+}
+.field-label { font-size: 12px; color: var(--grey); margin-bottom: 4px; font-weight: 600; }
+.field-input {
+  width: 100%; background: var(--navy2);
+  border: 1px solid var(--border); border-radius: 10px;
+  color: var(--white); font-family: var(--font-main);
+  font-size: 14px; padding: 10px 12px;
+  outline: none; resize: none;
+  margin-bottom: 10px;
+}
+.field-input:focus { border-color: var(--blue2); }
+.field-input, .search-input {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.radio-row { display: flex; gap: 8px; margin-bottom: 14px; }
+.radio-btn {
+  flex: 1; padding: 10px; border-radius: 10px;
+  border: 2px solid var(--border);
+  background: var(--navy2);
+  font-family: var(--font-display); font-size: 16px; font-weight: 700;
+  color: var(--grey); cursor: pointer; text-align: center;
+  transition: all 0.15s;
+}
+.radio-btn.active {
+  border-color: var(--green2);
+  background: rgba(46,204,113,0.15);
+  color: var(--green2);
+}
+
+.form-actions { display: flex; gap: 8px; }
+.form-actions .btn-action { font-size: 13px; padding: 12px 8px; }
+
+/* ══════════════════════════ SETTINGS SCREEN ══════════════════════════ */
+#settings-screen { background: var(--navy); }
+
+.settings-card {
+  background: var(--card); border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: 20px; margin-bottom: 14px;
+}
+.settings-card h3 {
+  font-family: var(--font-display); font-size: 14px;
+  color: var(--gold); margin-bottom: 14px;
+  letter-spacing: 0.5px;
+}
+.settings-row {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 12px;
+}
+.settings-row label { flex: 1; font-size: 14px; color: var(--light); }
+.num-input {
+  width: 64px; text-align: center;
+  background: var(--navy2); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--white);
+  font-family: var(--font-display); font-size: 16px; font-weight: 700;
+  padding: 8px 4px; outline: none;
+}
+.num-input:focus { border-color: var(--blue2); }
+.settings-total {
+  font-size: 13px; color: var(--grey);
+  border-top: 1px solid var(--border);
+  padding-top: 12px; text-align: right;
+}
+#total-display { font-weight: 700; color: var(--gold); }
+
+/* ══════════════════════════ DETAIL POPUP ══════════════════════════ */
+.popup-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 1000;
+  display: flex; align-items: flex-end;
+  opacity: 0; transition: opacity 0.25s;
+  pointer-events: none;
+}
+.popup-overlay.open { opacity: 1; pointer-events: all; }
+.popup-sheet {
+  width: 100%; max-height: 80vh;
+  background: var(--navy2);
+  border-radius: 20px 20px 0 0;
+  overflow-y: auto;
+  padding: 20px 20px 40px;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+.popup-overlay.open .popup-sheet { transform: translateY(0); }
+.popup-handle {
+  width: 40px; height: 4px;
+  background: var(--border); border-radius: 2px;
+  margin: 0 auto 20px;
+}
+.popup-result {
+  font-family: var(--font-display); font-size: 20px; font-weight: 700;
+  text-align: center; margin-bottom: 16px;
+}
+.detail-block {
+  background: var(--card); border-radius: 10px;
+  padding: 14px; margin-bottom: 10px;
+}
+.detail-label { font-size: 11px; color: var(--grey); font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.detail-value { font-size: 14px; line-height: 1.6; }
+
+/* ══════════════════════════ TOAST ══════════════════════════ */
+#toast {
+  position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: #333; color: white; padding: 10px 20px;
+  border-radius: 20px; font-size: 13px;
+  opacity: 0; transition: all 0.3s; z-index: 2000;
+  pointer-events: none; white-space: nowrap;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ══════════════════════════ LOADING ══════════════════════════ */
+.loading-overlay {
+  position: fixed; inset: 0;
+  background: rgba(13,27,42,0.9);
+  z-index: 500; display: none;
+  flex-direction: column; align-items: center; justify-content: center;
+  gap: 16px;
+}
+.loading-overlay.show { display: flex; }
+.spinner {
+  width: 42px; height: 42px;
+  border: 3px solid var(--border);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-size: 14px; color: var(--grey); }
+
+/* ══════════════════════════ UTILS ══════════════════════════ */
+.mb-btn { margin-top: 8px; padding: 14px 20px; width: 100%;
+  border: none; border-radius: var(--radius);
+  font-family: var(--font-main); font-size: 15px; font-weight: 700;
+  cursor: pointer; color: var(--white); }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ══════════ MENU ══════════ -->
+  <div class="screen active" id="menu-screen">
+    <div class="scroll-body" style="padding-top:0">
+      <div class="menu-hero">
+        <div class="menu-badge">Công an tỉnh Thái Nguyên</div>
+        <div class="menu-title">200 Câu hỏi<br>Điều lệnh CAND</div>
+        <div class="menu-sub">Đội CNTT — MasonJavis</div>
+      </div>
+
+      <div class="menu-buttons">
+        <button class="btn-main btn-exam" onclick="startQuiz('exam')">
+          <span class="btn-icon-big">🔥</span>
+          <span class="btn-label">THI THỬ<br><small style="font-weight:400;opacity:0.8">20 câu · 6 phút</small></span>
+          <span class="btn-arrow">›</span>
+        </button>
+        <button class="btn-main btn-all" onclick="startQuiz('all')">
+          <span class="btn-icon-big">📘</span>
+          <span class="btn-label">LÀM TẤT CẢ CÂU HỎI<br><small style="font-weight:400;opacity:0.8">Học theo thứ tự ngẫu nhiên</small></span>
+          <span class="btn-arrow">›</span>
+        </button>
+        <button class="btn-main btn-admin" onclick="gotoScreen('admin-screen')">
+          <span class="btn-icon-big">⚙️</span>
+          <span class="btn-label">QUẢN LÝ CÂU HỎI</span>
+          <span class="btn-arrow">›</span>
+        </button>
+        <button class="btn-main btn-update" id="update-btn" onclick="updateQuestions()">
+          <span class="btn-icon-big">🔄</span>
+          <span class="btn-label">CẬP NHẬT CÂU HỎI<br><small id="update-sub" style="font-weight:400;opacity:0.8">Tải từ GitHub</small></span>
+          <span class="btn-arrow">›</span>
+        </button>
+        <button class="btn-main btn-settings" onclick="gotoScreen('settings-screen')">
+          <span class="btn-icon-big">🗂️</span>
+          <span class="btn-label">CÀI ĐẶT CƠ CẤU ĐỀ</span>
+          <span class="btn-arrow">›</span>
+        </button>
+      </div>
+
+      <div class="menu-footer">
+        <div>
+          <div class="menu-footer-text">App v<span id="app-ver">1.8</span></div>
+          <div class="menu-footer-text">Câu hỏi v<span id="data-ver">N/A</span></div>
+        </div>
+        <div id="q-count-badge" class="version-badge">0 câu</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ QUIZ ══════════ -->
+  <div class="screen" id="quiz-screen">
+    <div class="topbar">
+      <button class="btn-icon" onclick="exitQuiz()">✕</button>
+      <span class="topbar-title" id="quiz-title">Thi thử</span>
+      <span id="timer-display" style="font-size:16px;font-weight:700;color:var(--gold2)">06:00</span>
+    </div>
+
+    <div class="quiz-progress-bar">
+      <div class="quiz-progress-fill" id="prog-fill" style="width:0%"></div>
+    </div>
+
+    <div class="quiz-meta">
+      <span class="quiz-counter" id="q-counter">Câu 1 / 20</span>
+    </div>
+
+    <div class="feedback-bar" id="feedback-bar"></div>
+
+    <!-- All-mode nav -->
+    <div class="all-nav" id="all-nav" style="display:none">
+      <button class="btn-action muted" onclick="prevQuestion()">❮ TRƯỚC</button>
+      <button class="btn-action warning" onclick="showAnswer()">👁 ĐÁP ÁN</button>
+      <button class="btn-action success" onclick="nextNoSave()">SAU ❯</button>
+      <button class="btn-action muted" style="color:#e74c3c" onclick="finishQuiz()">🛑</button>
+    </div>
+
+    <div class="scroll-body" style="padding-top:0">
+      <div class="question-card" id="question-text"></div>
+      <div class="options" id="options-container"></div>
+    </div>
+
+    <!-- Exam actions -->
+    <div class="quiz-actions" id="exam-actions">
+      <button class="btn-action muted" onclick="skipQuestion()">⏳ BỎ QUA</button>
+      <button class="btn-action primary" onclick="confirmAnswer()">TIẾP THEO ❯</button>
+    </div>
+  </div>
+
+  <!-- ══════════ REVIEW ══════════ -->
+  <div class="screen" id="review-screen">
+    <div class="topbar">
+      <button class="btn-icon" onclick="backToMenu()">‹</button>
+      <span class="topbar-title">Kết quả</span>
+      <span></span>
+    </div>
+    <div class="result-hero" id="result-hero"></div>
+    <div class="scroll-body" style="padding-top:4px">
+      <div id="review-list"></div>
+      <button class="mb-btn" style="background:linear-gradient(135deg,var(--blue),var(--blue2))" onclick="backToMenu()">
+        VỀ MENU CHÍNH
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════ ADMIN ══════════ -->
+  <div class="screen" id="admin-screen">
+    <div class="topbar">
+      <button class="btn-icon" onclick="goBack()">‹</button>
+      <span class="topbar-title">Quản lý câu hỏi</span>
+      <span></span>
+    </div>
+    <div class="search-row">
+      <input type="text" class="search-input" id="admin-search" placeholder="🔍 Tìm kiếm câu hỏi..." oninput="refreshAdminList()">
+      <button class="btn-action muted" style="flex:0;padding:10px 14px;font-size:13px" onclick="document.getElementById('admin-search').value='';refreshAdminList()">Xóa</button>
+    </div>
+    <div style="flex:1;overflow:hidden;display:flex;flex-direction:column">
+      <div style="flex:1;overflow-y:auto;padding:0 16px 8px">
+        <div class="q-list" id="admin-q-list"></div>
+      </div>
+      <div class="form-panel" id="form-panel">
+        <div class="form-panel-header" onclick="toggleFormPanel()">
+          <span class="form-section-title" id="form-mode-label">📝 THÊM / SỬA CÂU HỎI</span>
+          <span class="form-panel-toggle-icon">▼</span>
+        </div>
+        <div class="form-panel-body">
+        <div class="field-label">Nội dung câu hỏi</div>
+        <textarea class="field-input" id="f-q" rows="3" placeholder="Nhập nội dung câu hỏi..."></textarea>
+        <div class="field-label">Đáp án A</div>
+        <input type="text" class="field-input" id="f-a" placeholder="Đáp án A...">
+        <div class="field-label">Đáp án B</div>
+        <input type="text" class="field-input" id="f-b" placeholder="Đáp án B...">
+        <div class="field-label">Đáp án C</div>
+        <input type="text" class="field-input" id="f-c" placeholder="Đáp án C...">
+        <div class="field-label">Đáp án đúng</div>
+        <div class="radio-row">
+          <button class="radio-btn active" id="rb-0" onclick="selectAns(0)">A</button>
+          <button class="radio-btn" id="rb-1" onclick="selectAns(1)">B</button>
+          <button class="radio-btn" id="rb-2" onclick="selectAns(2)">C</button>
+        </div>
+        <div class="form-actions">
+          <button class="btn-action success" onclick="adminAdd()">➕ THÊM</button>
+          <button class="btn-action warning" onclick="adminUpdate()">✏️ SỬA</button>
+          <button class="btn-action danger" onclick="adminDelete()">🗑️ XÓA</button>
+          <button class="btn-action muted" onclick="resetForm()">↺</button>
+        </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ SETTINGS ══════════ -->
+  <div class="screen" id="settings-screen">
+    <div class="topbar">
+      <button class="btn-icon" onclick="goBack()">‹</button>
+      <span class="topbar-title">Cài đặt cơ cấu đề</span>
+      <span></span>
+    </div>
+    <div class="scroll-body">
+      <div class="settings-card">
+        <h3>📋 Cơ cấu đề thi (tổng 20 câu)</h3>
+        <div class="settings-row">
+          <label>Câu Nội vụ</label>
+          <input type="number" class="num-input" id="s-nv" value="8" min="0" max="20" oninput="updateTotal()">
+        </div>
+        <div class="settings-row">
+          <label>Câu Đội ngũ / Nghi lễ</label>
+          <input type="number" class="num-input" id="s-dn" value="4" min="0" max="20" oninput="updateTotal()">
+        </div>
+        <div class="settings-row">
+          <label>Câu Xử lý vi phạm</label>
+          <input type="number" class="num-input" id="s-xl" value="8" min="0" max="20" oninput="updateTotal()">
+        </div>
+        <div class="settings-total">Tổng: <span id="total-display">20</span> / 20 câu</div>
+      </div>
+      <button class="mb-btn" style="background:linear-gradient(135deg,#1a6b3c,var(--green))" onclick="saveSettings()">💾 LƯU CÀI ĐẶT</button>
+    </div>
+  </div>
+
+</div><!-- #app -->
+
+<!-- Detail Popup -->
+<div class="popup-overlay" id="detail-popup" onclick="closePopup(event)">
+  <div class="popup-sheet">
+    <div class="popup-handle"></div>
+    <div class="popup-result" id="popup-result"></div>
+    <div class="detail-block">
+      <div class="detail-label">❓ Câu hỏi</div>
+      <div class="detail-value" id="popup-q"></div>
+    </div>
+    <div class="detail-block">
+      <div class="detail-label">👆 Bạn chọn</div>
+      <div class="detail-value" id="popup-your"></div>
+    </div>
+    <div class="detail-block" id="popup-correct-block">
+      <div class="detail-label">✅ Đáp án đúng</div>
+      <div class="detail-value" id="popup-correct"></div>
+    </div>
+    <button class="mb-btn" style="background:var(--navy);border:1px solid var(--border)" onclick="closePopupDirect()">ĐÓNG</button>
+  </div>
+</div>
+
+<!-- Loading -->
+<div class="loading-overlay" id="loading">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loading-text">Đang tải...</div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+//  CONSTANTS & CONFIG
+// ═══════════════════════════════════════════════════════════════
+const APP_VERSION = '1.8';
+const GITHUB_DATA_URL = 'https://raw.githubusercontent.com/MasonJavis2k/Cauhoidieulenh/main/data_quiz.json';
+const GITHUB_VER_URL  = 'https://raw.githubusercontent.com/MasonJavis2k/Cauhoidieulenh/refs/heads/main/version.txt';
+
+// ═══════════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════════
+let allQuestions = [];
+let dataVersion  = 'N/A';
+let topicCounts  = { noi_vu: 8, doi_ngu: 4, xu_ly: 8 };
+
+let quizQueue    = [];   // array, index 0 = current
+let quizMode     = '';   // 'exam' | 'all'
+let score        = 0;
+let reviewData   = [];
+let totalCount   = 0;
+let selectedIdx  = null;
+let isAnswered   = false;
+let timerVal     = 0;
+let timerInterval= null;
+let editingIdx   = -1;
+let answerIdx    = 0;
+let prevScreen   = 'menu-screen';
+let historyStack = [];
+
+// ═══════════════════════════════════════════════════════════════
+//  STORAGE
+// ═══════════════════════════════════════════════════════════════
+function saveLocal() {
+  try {
+    const raw = { version: dataVersion, questions: allQuestions };
+    localStorage.setItem('quiz_data', JSON.stringify(raw));
+    localStorage.setItem('quiz_settings', JSON.stringify(topicCounts));
+  } catch(e) {}
+}
+function loadLocal() {
+  try {
+    const raw = localStorage.getItem('quiz_data');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && parsed.questions) {
+        allQuestions = parsed.questions;
+        dataVersion  = parsed.version || 'N/A';
+      } else if (Array.isArray(parsed)) {
+        allQuestions = parsed;
+      }
+    }
+    const st = localStorage.getItem('quiz_settings');
+    if (st) topicCounts = { ...topicCounts, ...JSON.parse(st) };
+  } catch(e) {}
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  SCREEN MANAGER
+// ═══════════════════════════════════════════════════════════════
+function gotoScreen(id) {
+  const current = document.querySelector('.screen.active');
+  if (!current || current.id === id) return;
+  historyStack.push(current.id);
+  current.classList.add('leaving');
+  current.classList.remove('active');
+  setTimeout(() => current.classList.remove('leaving'), 350);
+  const next = document.getElementById(id);
+  next.classList.add('active');
+}
+function goBack() {
+  if (!historyStack.length) return;
+  const prev = historyStack.pop();
+  const current = document.querySelector('.screen.active');
+  if (!current) return;
+  current.classList.remove('active');
+  document.getElementById(prev).classList.add('active');
+}
+function backToMenu() {
+  historyStack = [];
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active','leaving'));
+  document.getElementById('menu-screen').classList.add('active');
+  updateMenuUI();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  MENU UI
+// ═══════════════════════════════════════════════════════════════
+function updateMenuUI() {
+  document.getElementById('app-ver').textContent   = APP_VERSION;
+  document.getElementById('data-ver').textContent  = dataVersion;
+  document.getElementById('q-count-badge').textContent = allQuestions.length + ' câu';
+  document.getElementById('s-nv').value = topicCounts.noi_vu;
+  document.getElementById('s-dn').value = topicCounts.doi_ngu;
+  document.getElementById('s-xl').value = topicCounts.xu_ly;
+  updateTotal();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  UPDATE / DOWNLOAD
+// ═══════════════════════════════════════════════════════════════
+function updateQuestions() {
+  showLoading('Đang kết nối GitHub...');
+  const cb = '?t=' + Date.now();
+  fetch(GITHUB_DATA_URL + cb)
+    .then(r => r.json())
+    .then(data => {
+      if (data && data.questions) {
+        allQuestions = data.questions;
+        dataVersion  = data.version || '1.0';
+      } else if (Array.isArray(data)) {
+        allQuestions = data;
+      }
+      saveLocal();
+      hideLoading();
+      updateMenuUI();
+      showToast('✅ Cập nhật thành công! ' + allQuestions.length + ' câu');
+      document.getElementById('update-sub').textContent = 'v' + dataVersion + ' — ' + allQuestions.length + ' câu';
+    })
+    .catch(e => {
+      hideLoading();
+      showToast('❌ Không tải được — kiểm tra kết nối mạng');
+    });
+}
+
+function checkRemoteVersion() {
+  const cb = '?t=' + Date.now();
+  fetch(GITHUB_VER_URL + cb)
+    .then(r => r.text())
+    .then(latest => {
+      latest = latest.trim();
+      function ver(v) { return v.split('.').map(Number); }
+      function newerThan(a, b) {
+        const va = ver(a), vb = ver(b);
+        for (let i = 0; i < Math.max(va.length, vb.length); i++) {
+          const ai = va[i]||0, bi = vb[i]||0;
+          if (ai > bi) return true;
+          if (ai < bi) return false;
+        }
+        return false;
+      }
+      if (newerThan(latest, APP_VERSION)) {
+        const btn = document.getElementById('update-btn');
+        btn.querySelector('.btn-label').innerHTML =
+          `CẬP NHẬT CÂU HỎI<br><small style="font-weight:400;opacity:0.8">🔔 Có phiên bản mới v${latest}!</small>`;
+        btn.style.background = 'linear-gradient(135deg,#c0392b,#e67e22)';
+      }
+    }).catch(() => {});
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  QUIZ
+// ═══════════════════════════════════════════════════════════════
+function startQuiz(mode) {
+  if (!allQuestions.length) { showToast('Chưa có câu hỏi! Hãy cập nhật câu hỏi.'); return; }
+  quizMode   = mode;
+  score      = 0;
+  reviewData = [];
+  selectedIdx = null;
+  isAnswered  = false;
+
+  if (mode === 'exam') {
+    // Phân loại theo topic
+    const tm = { noi_vu:[], doi_ngu:[], xu_ly:[] };
+    for (const q of allQuestions) {
+      const cat = (q[5]||'noi_vu').toLowerCase().trim();
+      if (tm[cat]) tm[cat].push(q); else tm.noi_vu.push(q);
+    }
+    let selected = [];
+    for (const [topic, needed] of Object.entries(topicCounts)) {
+      const pool = shuffle([...tm[topic]]);
+      selected.push(...pool.slice(0, needed));
+    }
+    if (!selected.length) selected = shuffle([...allQuestions]).slice(0, 20);
+    quizQueue  = shuffle(selected);
+    totalCount = quizQueue.length;
+    timerVal   = 6 * 60;
+    startTimer();
+  } else {
+    quizQueue  = shuffle([...allQuestions]);
+    totalCount = quizQueue.length;
+    timerVal   = 0;
+    clearInterval(timerInterval);
+    document.getElementById('timer-display').textContent = '';
+  }
+
+  document.getElementById('quiz-title').textContent = mode === 'exam' ? 'Thi thử' : 'Làm tất cả';
+  document.getElementById('all-nav').style.display   = mode === 'all' ? 'flex' : 'none';
+  document.getElementById('exam-actions').style.display = mode === 'exam' ? 'flex' : 'none';
+
+  gotoScreen('quiz-screen');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  if (!quizQueue.length) { finishQuiz(); return; }
+  const q = quizQueue[0];
+  selectedIdx = null;
+  isAnswered  = false;
+
+  const done = totalCount - quizQueue.length;
+  const pct  = totalCount > 0 ? (done / totalCount * 100) : 0;
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('q-counter').textContent = `Câu ${done + 1} / ${totalCount}`;
+  document.getElementById('feedback-bar').textContent = '';
+  document.getElementById('feedback-bar').style.color = '';
+  document.getElementById('question-text').textContent = q[0];
+
+  const container = document.getElementById('options-container');
+  container.innerHTML = '';
+  for (let i = 0; i < 3; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="option-letter">${'ABC'[i]}</span><span class="option-text">${q[i+1]}</span>`;
+    btn.onclick = () => handleClick(i);
+    container.appendChild(btn);
+  }
+}
+
+function handleClick(idx) {
+  if (isAnswered) return;
+  selectedIdx = idx;
+  const q = quizQueue[0];
+  const correct = q[4];
+  const opts = document.querySelectorAll('.option-btn');
+
+  if (quizMode === 'all') {
+    isAnswered = true;
+    opts.forEach((o, i) => {
+      o.classList.add('disabled');
+      if (i === correct) o.classList.add('correct');
+      else if (i === idx) o.classList.add('wrong');
+    });
+    const ok = idx === correct;
+    if (ok) score++;
+    document.getElementById('feedback-bar').textContent = ok ? '✔ CHÍNH XÁC!' : `✘ SAI! ĐÁP ÁN: ${'ABC'[correct]}`;
+    document.getElementById('feedback-bar').style.color = ok ? '#2ecc71' : '#e74c3c';
+    reviewData.push({
+      question: q[0],
+      your_ans: `${'ABC'[idx]}. ${q[idx+1]}`,
+      correct_ans: `${'ABC'[correct]}. ${q[correct+1]}`,
+      result: ok ? 'Đúng' : 'Sai'
+    });
+  } else {
+    // exam: chỉ highlight viền xanh
+    opts.forEach((o, i) => {
+      o.classList.remove('selected');
+      if (i === idx) o.classList.add('selected');
+    });
+  }
+}
+
+function showAnswer() {
+  if (!quizQueue.length) return;
+  handleClick(quizQueue[0][4]);
+}
+
+function confirmAnswer() {
+  if (selectedIdx === null) { showToast('Hãy chọn một đáp án!'); return; }
+  const q = quizQueue.shift();
+  const ok = selectedIdx === q[4];
+  if (ok) score++;
+  reviewData.push({
+    question: q[0],
+    your_ans: `${'ABC'[selectedIdx]}. ${q[selectedIdx+1]}`,
+    correct_ans: `${'ABC'[q[4]]}. ${q[q[4]+1]}`,
+    result: ok ? 'Đúng' : 'Sai'
+  });
+  renderQuestion();
+}
+
+function skipQuestion() {
+  const q = quizQueue.shift();
+  quizQueue.push(q);
+  renderQuestion();
+}
+
+function prevQuestion() {
+  if (quizQueue.length < 2) return;
+  const last = quizQueue.pop();
+  quizQueue.unshift(last);
+  renderQuestion();
+}
+
+function nextNoSave() {
+  if (!quizQueue.length) return;
+  const q = quizQueue.shift();
+  quizQueue.push(q);
+  renderQuestion();
+}
+
+function exitQuiz() {
+  clearInterval(timerInterval);
+  timerInterval = null;
+  backToMenu();
+}
+
+function finishQuiz() {
+  clearInterval(timerInterval);
+  timerInterval = null;
+  renderReview();
+  gotoScreen('review-screen');
+}
+
+// ── Timer ────────────────────────────────────────────────────────
+function startTimer() {
+  clearInterval(timerInterval);
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    timerVal--;
+    updateTimerDisplay();
+    if (timerVal <= 0) {
+      clearInterval(timerInterval);
+      showToast('⏰ Hết giờ làm bài!');
+      setTimeout(finishQuiz, 1200);
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const m = Math.floor(timerVal / 60);
+  const s = timerVal % 60;
+  const el = document.getElementById('timer-display');
+  el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  el.classList.toggle('warning', timerVal <= 60);
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  REVIEW
+// ═══════════════════════════════════════════════════════════════
+function renderReview() {
+  const hero = document.getElementById('result-hero');
+  const passed = score >= Math.ceil(totalCount / 2);
+
+  if (quizMode === 'exam') {
+    hero.innerHTML = `
+      <div class="result-status" style="color:${passed?'#2ecc71':'#e74c3c'}">${passed?'ĐẠT ✅':'TRƯỢT ❌'}</div>
+      <div class="result-score">Điểm số: ${score} / ${totalCount}</div>
+      <div class="result-sub">${passed?'Chúc mừng! Bạn đã vượt qua!':'Cố gắng hơn ở lần sau nhé!'}</div>`;
+  } else {
+    hero.innerHTML = `
+      <div class="result-status" style="color:var(--gold)">KẾT QUẢ 📊</div>
+      <div class="result-score">Điểm số: ${score} / ${totalCount}</div>
+      <div class="result-sub">Tỉ lệ đúng: ${totalCount>0?Math.round(score/totalCount*100):0}%</div>`;
+  }
+
+  const list = document.getElementById('review-list');
+  list.innerHTML = '';
+  reviewData.forEach((item, i) => {
+    const ok = item.result === 'Đúng';
+    const div = document.createElement('div');
+    div.className = `review-item ${ok?'correct':'wrong'}`;
+    const q_short = item.question.length > 80 ? item.question.slice(0,80)+'…' : item.question;
+    div.innerHTML = `
+      <span class="review-tag ${ok?'correct':'wrong'}">${ok?'✔ ĐÚNG':'✘ SAI'}</span>
+      <div class="review-q">${q_short}</div>
+      <div class="review-ans">Bạn chọn: ${item.your_ans}</div>`;
+    div.onclick = () => showDetail(item, ok);
+    list.appendChild(div);
+  });
+}
+
+function showDetail(item, ok) {
+  document.getElementById('popup-result').textContent = ok ? '✔ ĐÚNG' : '✘ SAI';
+  document.getElementById('popup-result').style.color = ok ? '#2ecc71' : '#e74c3c';
+  document.getElementById('popup-q').textContent = item.question;
+  document.getElementById('popup-your').textContent = item.your_ans;
+  document.getElementById('popup-correct').textContent = item.correct_ans;
+  document.getElementById('popup-correct-block').style.display = ok ? 'none' : 'block';
+  document.getElementById('detail-popup').classList.add('open');
+}
+
+function closePopup(e) {
+  if (e.target === document.getElementById('detail-popup')) closePopupDirect();
+}
+function closePopupDirect() {
+  document.getElementById('detail-popup').classList.remove('open');
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  ADMIN
+// ═══════════════════════════════════════════════════════════════
+function refreshAdminList() {
+  const kw = document.getElementById('admin-search').value.toLowerCase();
+  const list = document.getElementById('admin-q-list');
+  list.innerHTML = '';
+  allQuestions.forEach((q, i) => {
+    const txt = String(q[0]);
+    if (kw && !txt.toLowerCase().includes(kw)) return;
+    const short = txt.length > 60 ? txt.slice(0,60)+'…' : txt;
+    const row = document.createElement('div');
+    row.className = 'q-row' + (i === editingIdx ? ' selected' : '');
+    row.innerHTML = `<span class="q-num">${i+1}</span><span class="q-text">${short}</span><span class="q-ans">${'ABC'[q[4]]}</span>`;
+    row.onclick = () => adminSelect(i);
+    list.appendChild(row);
+  });
+}
+
+function toggleFormPanel() {
+  document.getElementById('form-panel').classList.toggle('open');
+}
+
+function adminSelect(idx) {
+  editingIdx = idx;
+  const q = allQuestions[idx];
+  document.getElementById('f-q').value = q[0];
+  document.getElementById('f-a').value = q[1];
+  document.getElementById('f-b').value = q[2];
+  document.getElementById('f-c').value = q[3];
+  selectAns(q[4]);
+  document.getElementById('form-mode-label').textContent = `📝 CẬP NHẬT câu #${idx+1}`;
+  // Auto-open form panel when a question is selected
+  document.getElementById('form-panel').classList.add('open');
+  refreshAdminList();
+}
+
+function selectAns(i) {
+  answerIdx = i;
+  ['rb-0','rb-1','rb-2'].forEach((id, j) => {
+    document.getElementById(id).classList.toggle('active', j === i);
+  });
+}
+
+function validateForm() {
+  const q = document.getElementById('f-q').value.trim();
+  const a = document.getElementById('f-a').value.trim();
+  const b = document.getElementById('f-b').value.trim();
+  const c = document.getElementById('f-c').value.trim();
+  if (!q||!a||!b||!c) { showToast('Vui lòng điền đầy đủ câu hỏi và 3 đáp án!'); return null; }
+  return [q, a, b, c, answerIdx, 'noi_vu'];
+}
+
+function adminAdd() {
+  const q = validateForm(); if (!q) return;
+  allQuestions.push(q);
+  saveLocal(); resetForm(); refreshAdminList();
+  showToast('✅ Đã thêm câu hỏi mới!');
+  updateMenuUI();
+}
+
+function adminUpdate() {
+  if (editingIdx < 0) { showToast('Chọn một câu hỏi để cập nhật!'); return; }
+  const q = validateForm(); if (!q) return;
+  allQuestions[editingIdx] = q;
+  saveLocal(); refreshAdminList();
+  showToast('✅ Đã cập nhật!');
+}
+
+function adminDelete() {
+  if (editingIdx < 0) { showToast('Chọn một câu hỏi để xóa!'); return; }
+  if (!confirm(`Xóa câu #${editingIdx+1}?`)) return;
+  allQuestions.splice(editingIdx, 1);
+  saveLocal(); editingIdx = -1; resetForm(); refreshAdminList();
+  showToast('🗑️ Đã xóa!');
+  updateMenuUI();
+}
+
+function resetForm() {
+  editingIdx = -1;
+  document.getElementById('f-q').value = '';
+  document.getElementById('f-a').value = '';
+  document.getElementById('f-b').value = '';
+  document.getElementById('f-c').value = '';
+  selectAns(0);
+  document.getElementById('form-mode-label').textContent = '📝 THÊM / SỬA CÂU HỎI';
+  refreshAdminList();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  SETTINGS
+// ═══════════════════════════════════════════════════════════════
+function updateTotal() {
+  const nv = parseInt(document.getElementById('s-nv').value)||0;
+  const dn = parseInt(document.getElementById('s-dn').value)||0;
+  const xl = parseInt(document.getElementById('s-xl').value)||0;
+  const total = nv + dn + xl;
+  const el = document.getElementById('total-display');
+  el.textContent = total;
+  el.style.color = total === 20 ? 'var(--gold)' : '#e74c3c';
+}
+
+function saveSettings() {
+  const nv = parseInt(document.getElementById('s-nv').value)||0;
+  const dn = parseInt(document.getElementById('s-dn').value)||0;
+  const xl = parseInt(document.getElementById('s-xl').value)||0;
+  if (nv + dn + xl !== 20) { showToast(`Tổng phải bằng 20 câu! (Hiện: ${nv+dn+xl})`); return; }
+  topicCounts = { noi_vu: nv, doi_ngu: dn, xu_ly: xl };
+  saveLocal();
+  showToast('💾 Đã lưu cài đặt!');
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════════════════════
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function showLoading(msg) {
+  document.getElementById('loading-text').textContent = msg || 'Đang tải...';
+  document.getElementById('loading').classList.add('show');
+}
+function hideLoading() {
+  document.getElementById('loading').classList.remove('show');
+}
+
+let toastTimeout;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════════
+window.addEventListener('load', () => {
+  loadLocal();
+  updateMenuUI();
+  // Kiểm tra update ngầm
+  setTimeout(checkRemoteVersion, 2000);
+
+  // Nếu chưa có câu hỏi, tự động tải
+  if (!allQuestions.length) {
+    showLoading('Đang tải câu hỏi lần đầu...');
+    const cb = '?t=' + Date.now();
+    fetch(GITHUB_DATA_URL + cb)
+      .then(r => r.json())
+      .then(data => {
+        if (data && data.questions) {
+          allQuestions = data.questions;
+          dataVersion  = data.version || '1.0';
+        } else if (Array.isArray(data)) {
+          allQuestions = data;
+        }
+        saveLocal(); hideLoading(); updateMenuUI();
+        showToast('✅ Tải xong ' + allQuestions.length + ' câu hỏi!');
+      })
+      .catch(() => {
+        hideLoading();
+        showToast('⚠️ Không tải được câu hỏi. Kiểm tra mạng rồi nhấn Cập nhật.');
+      });
+  }
+});
+</script>
+</body>
+</html>
