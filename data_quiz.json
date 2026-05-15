@@ -1,5 +1,5 @@
 {
-    "version": "1.0.4",
+    "version": "1.0.5",
     "questions": [
         [
             "Thông tư quy định về Điều lệnh nội vụ CAND gồm có bao nhiêu chương, bao nhiêu điều?",
@@ -1418,7 +1418,7 @@
             "xu_ly"
         ],
         [
-            "kết nối mạng internet, thiết bị có chức năng quay phim, chụp ảnh ở những nơi bị cấm; chia sẻ, đăng tải thông tin, hình ảnh các loại giấy tờ, số hiệu Công an nhân dân do ngành Công an cấp, hình ảnh cán bộ, chiến sĩ sử dụng trang phục Công an nhân dân lên mạng xã hội trừ trường hợp đăng tải hình ảnh có tác động tích cực đến xã hội, lan tỏa hình ảnh đẹp của lực lượng Công an nhân dân thì sẽ bị xử lý?",
+            "Thông tư số 113/2025/TT-BCA, ngày 28/11/2025 của Bộ Công an quy định, cán bộ, chiến sĩ sử dụng điện thoại di động hoặc các thiết bị có kết nối mạng internet, thiết bị có chức năng quay phim, chụp ảnh ở những nơi bị cấm; chia sẻ, đăng tải thông tin, hình ảnh các loại giấy tờ, số hiệu Công an nhân dân do ngành Công an cấp, hình ảnh cán bộ, chiến sĩ sử dụng trang phục Công an nhân dân lên mạng xã hội trừ trường hợp đăng tải hình ảnh có tác động tích cực đến xã hội, lan tỏa hình ảnh đẹp của lực lượng Công an nhân dân thì sẽ bị xử lý?",
             "Hạ một bậc danh hiệu thi đua năm.",
             "Không xét tặng danh hiệu thi đua năm.",
             "Hạ hai bậc danh hiệu thi đua năm.",
@@ -1509,8 +1509,7 @@
             "Xếp loại không hoàn thành nhiệm vụ trong năm.",
             "Xử lý bằng hình thức kỷ luật Khiển trách.",
             "Xử lý bằng hình thức kỷ luật Cảnh cáo.",
-            2,
-            "xu_ly"
+            2
         ],
         [
             "Thông tư số 113/2025/TT-BCA, ngày 28/11/2025 của Bộ Công an quy định, lãnh đạo, chỉ huy Công an từ cấp đội, cấp xã, cấp đại đội trực thuộc trung đoàn trở lên bỏ vị trí công tác, bỏ trực không lý do; trong giờ làm việc, giờ trực, giờ nghỉ trưa của ngày làm việc, ngày trực hoặc khi điều khiến phương tiện tham gia giao thông mà trong máu hoặc hơi thở có nồng độ cồn thì xử lý như thế nào?",
