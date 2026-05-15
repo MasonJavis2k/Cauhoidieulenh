@@ -553,7 +553,7 @@ html, body {
         </button>
         <button class="btn-main btn-all" onclick="startQuiz('all')">
           <span class="btn-icon-big">📘</span>
-          <span class="btn-label">LÀM TẤT CẢ CÂU HỎI<br><small style="font-weight:400;opacity:0.8">Học theo thứ tự ngẫu nhiên</small></span>
+          <span class="btn-label">LÀM TẤT CẢ CÂU HỎI<br><small style="font-weight:400;opacity:0.8">Học theo thứ tự từ đầu đến cuối</small></span>
           <span class="btn-arrow">›</span>
         </button>
         <button class="btn-main btn-admin" onclick="gotoScreen('admin-screen')">
@@ -921,7 +921,7 @@ function startQuiz(mode) {
     timerVal   = 6 * 60;
     startTimer();
   } else {
-    quizQueue  = shuffle([...allQuestions]);
+    quizQueue  = [...allQuestions];
     totalCount = quizQueue.length;
     timerVal   = 0;
     clearInterval(timerInterval);
