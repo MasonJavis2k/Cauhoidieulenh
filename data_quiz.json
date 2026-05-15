@@ -1,5 +1,5 @@
 {
-    "version": "1.0.5",
+    "version": "1.0.6",
     "questions": [
         [
             "Thông tư quy định về Điều lệnh nội vụ CAND gồm có bao nhiêu chương, bao nhiêu điều?",
@@ -1006,8 +1006,7 @@
             "Từ vị trí đôn đốc, chỉnh đốn hàng ngũ trực ban buổi lễ tiến 5 bước hoặc một khoảng cách thích hợp.",
             "Từ vị trí đôn đốc, chỉnh đốn hàng ngũ trực ban buổi lễ tiến 3 bước hoặc một khoảng cách thích hợp.",
             "Từ vị trí đôn đốc, chỉnh đốn hàng ngũ trực ban buổi lễ tiến 2 bước hoặc một khoảng cách thích hợp.",
-            2,
-            "doi_ngu"
+            0
         ],
         [
             "Trong Lễ chào cờ Tổ quốc ở đơn vị có trụ sở độc lập, vị trí đứng của các đồng chí lãnh đạo như thế nào?",
