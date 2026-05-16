@@ -853,8 +853,8 @@ html, body {
       <div id="tips-display-content" class="tips-content">
         <div class="tips-empty">Chưa có mẹo nào. Admin hãy thêm mẹo vào!</div>
       </div>
-      <button class="tips-edit-btn" onclick="openTipsEdit()">
-        🔒 Chỉnh sửa mẹo (Admin)
+      <button class="tips-edit-btn" onclick="openTipsEdit()" style="opacity:0.5;font-size:12px;padding:10px">
+        🔒 Chỉnh sửa mẹo → sửa file tips.txt trên GitHub
       </button>
     </div>
   </div>
@@ -970,6 +970,7 @@ html, body {
 const APP_VERSION = '1.8';
 const GITHUB_DATA_URL = 'https://raw.githubusercontent.com/MasonJavis2k/Cauhoidieulenh/main/data_quiz.json';
 const GITHUB_VER_URL  = 'https://raw.githubusercontent.com/MasonJavis2k/Cauhoidieulenh/refs/heads/main/version.txt';
+const GITHUB_TIPS_URL = 'https://raw.githubusercontent.com/MasonJavis2k/Cauhoidieulenh/main/tips.txt';
 
 // ═══════════════════════════════════════════════════════════════
 //  STATE
@@ -1440,20 +1441,26 @@ function resetForm() {
 //  TIPS
 // ═══════════════════════════════════════════════════════════════
 function openTips() {
-  renderTipsContent();
   gotoScreen('tips-screen');
+  const el = document.getElementById('tips-display-content');
+  el.innerHTML = '<div class="tips-empty">⏳ Đang tải mẹo...</div>';
+  fetch(GITHUB_TIPS_URL + '?t=' + Date.now())
+    .then(r => { if (!r.ok) throw new Error(); return r.text(); })
+    .then(text => {
+      if (text.trim()) {
+        el.innerHTML = '';
+        el.textContent = text.trim();
+      } else {
+        el.innerHTML = '<div class="tips-empty">Chưa có mẹo nào.</div>';
+      }
+    })
+    .catch(() => {
+      el.innerHTML = '<div class="tips-empty">⚠️ Không tải được mẹo. Kiểm tra mạng rồi thử lại.</div>';
+    });
 }
 
 function renderTipsContent() {
-  const content = localStorage.getItem('tips_content') || '';
-  const el = document.getElementById('tips-display-content');
-  if (content.trim()) {
-    el.innerHTML = '';
-    el.textContent = content;
-    el.style.fontStyle = 'normal';
-  } else {
-    el.innerHTML = '<div class="tips-empty">Chưa có mẹo nào. Admin hãy thêm mẹo vào!</div>';
-  }
+  // không dùng nữa, giữ để tránh lỗi
 }
 
 function openTipsEdit() {
