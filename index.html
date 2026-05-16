@@ -156,6 +156,7 @@ html, body {
 .btn-main .btn-arrow { color: rgba(255,255,255,0.4); font-size: 16px; }
 
 .btn-exam    { background: linear-gradient(135deg, #c0392b, #922b21); box-shadow: 0 4px 20px rgba(192,57,43,0.4); }
+.btn-tips    { background: linear-gradient(135deg, #5d3a8e, #8e44ad); box-shadow: 0 4px 20px rgba(142,68,173,0.35); }
 .btn-all     { background: linear-gradient(135deg, #1a6b3c, #27ae60); box-shadow: 0 4px 20px rgba(39,174,96,0.3); }
 .btn-admin   { background: linear-gradient(135deg, #1a5276, #2980b9); box-shadow: 0 4px 20px rgba(41,128,185,0.3); }
 .btn-update  { background: linear-gradient(135deg, #7d5a00, #f0a500); box-shadow: 0 4px 20px rgba(240,165,0,0.25); }
@@ -460,7 +461,45 @@ html, body {
 }
 #total-display { font-weight: 700; color: var(--gold); }
 
-/* ══════════════════════════ DETAIL POPUP ══════════════════════════ */
+/* ══════════════════════════ TIPS SCREEN ══════════════════════════ */
+#tips-screen { background: var(--navy); }
+.tips-content {
+  background: var(--card); border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: 20px; margin-bottom: 14px;
+  font-size: 14px; line-height: 1.8; color: var(--light);
+  white-space: pre-wrap; word-break: break-word;
+  min-height: 120px;
+}
+.tips-empty {
+  text-align: center; color: var(--grey); font-size: 14px;
+  padding: 40px 20px; font-style: italic;
+}
+.tips-edit-btn {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; padding: 14px 20px;
+  background: linear-gradient(135deg, #5d3a8e, #8e44ad);
+  border: none; border-radius: var(--radius);
+  font-family: var(--font-main); font-size: 14px; font-weight: 700;
+  color: var(--white); cursor: pointer; margin-top: 4px;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.1s, opacity 0.1s;
+}
+.tips-edit-btn:active { transform: scale(0.97); opacity: 0.85; }
+
+/* ══════════════════════════ TIPS EDIT SCREEN ══════════════════════════ */
+#tips-edit-screen { background: var(--navy); }
+.tips-textarea {
+  width: 100%; background: var(--card);
+  border: 1px solid var(--border); border-radius: var(--radius);
+  color: var(--white); font-family: var(--font-main);
+  font-size: 14px; line-height: 1.8;
+  padding: 16px; outline: none; resize: none;
+  margin-bottom: 14px; min-height: 300px;
+  -webkit-user-select: text; user-select: text;
+}
+.tips-textarea:focus { border-color: #8e44ad; }
+
 .popup-overlay {
   position: fixed; inset: 0;
   background: rgba(0,0,0,0.7);
@@ -616,7 +655,12 @@ html, body {
           <span class="btn-label">THI THỬ<br><small style="font-weight:400;opacity:0.8">20 câu · 6 phút</small></span>
           <span class="btn-arrow">›</span>
         </button>
-        <button class="btn-main btn-all" onclick="startQuiz('all')">
+        <button class="btn-main btn-tips" onclick="openTips()">
+          <span class="btn-icon-big">💡</span>
+          <span class="btn-label">MẸO TRẢ LỜI CÂU HỎI<br><small style="font-weight:400;opacity:0.8">Chiến lược & kinh nghiệm thi</small></span>
+          <span class="btn-arrow">›</span>
+        </button>
+        <button class="btn-main btn-all" onclick="startQuiz('all')"
           <span class="btn-icon-big">📘</span>
           <span class="btn-label">LÀM TẤT CẢ CÂU HỎI<br><small style="font-weight:400;opacity:0.8">Học theo đề cương</small></span>
           <span class="btn-arrow">›</span>
@@ -798,7 +842,68 @@ html, body {
   </div>
 
 
-  <!-- ══════════ PIN OVERLAY ══════════ -->
+  <!-- ══════════ TIPS VIEW ══════════ -->
+  <div class="screen" id="tips-screen">
+    <div class="topbar">
+      <button class="btn-icon" onclick="goBack()">‹</button>
+      <span class="topbar-title">💡 Mẹo trả lời câu hỏi</span>
+      <span></span>
+    </div>
+    <div class="scroll-body">
+      <div id="tips-display-content" class="tips-content">
+        <div class="tips-empty">Chưa có mẹo nào. Admin hãy thêm mẹo vào!</div>
+      </div>
+      <button class="tips-edit-btn" onclick="openTipsEdit()">
+        🔒 Chỉnh sửa mẹo (Admin)
+      </button>
+    </div>
+  </div>
+
+  <!-- ══════════ TIPS EDIT ══════════ -->
+  <div class="screen" id="tips-edit-screen">
+    <div class="topbar">
+      <button class="btn-icon" onclick="goBack()">‹</button>
+      <span class="topbar-title">✏️ Chỉnh sửa mẹo</span>
+      <span></span>
+    </div>
+    <div class="scroll-body">
+      <div style="font-size:12px;color:var(--grey);margin-bottom:10px;">Soạn nội dung mẹo bên dưới. Mọi người sẽ chỉ đọc được, không sửa được.</div>
+      <textarea class="tips-textarea" id="tips-textarea" placeholder="Nhập mẹo trả lời câu hỏi tại đây...&#10;&#10;Ví dụ:&#10;• Đọc kỹ câu hỏi trước khi chọn đáp án&#10;• Loại bỏ đáp án sai trước&#10;..."></textarea>
+      <button class="mb-btn" style="background:linear-gradient(135deg,#1a6b3c,var(--green));margin-bottom:10px" onclick="saveTips()">💾 LƯU MẸO</button>
+      <button class="mb-btn" style="background:var(--navy2);border:1px solid var(--border)" onclick="goBack()">HỦY</button>
+    </div>
+  </div>
+
+  <!-- ══════════ PIN OVERLAY (TIPS) ══════════ -->
+  <div id="pin-tips-overlay" style="
+    display:none; position:fixed; inset:0; z-index:999;
+    background:rgba(13,27,42,0.97);
+    flex-direction:column; align-items:center; justify-content:center; gap:20px;
+  ">
+    <div style="font-family:var(--font-display);font-size:18px;font-weight:700;color:#8e44ad;letter-spacing:1px;">🔒 NHẬP MẬT KHẨU ADMIN</div>
+    <div style="font-size:13px;color:var(--grey);">Chỉnh sửa mẹo trả lời</div>
+    <div id="pin-tips-dots" style="display:flex;gap:14px;margin:4px 0;">
+      <span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span>
+      <span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span>
+    </div>
+    <div id="pin-tips-error" style="font-size:12px;color:#e74c3c;min-height:18px;"></div>
+    <div style="display:grid;grid-template-columns:repeat(3,72px);gap:10px;">
+      <button class="pin-key" onclick="tipsPin('1')">1</button>
+      <button class="pin-key" onclick="tipsPin('2')">2</button>
+      <button class="pin-key" onclick="tipsPin('3')">3</button>
+      <button class="pin-key" onclick="tipsPin('4')">4</button>
+      <button class="pin-key" onclick="tipsPin('5')">5</button>
+      <button class="pin-key" onclick="tipsPin('6')">6</button>
+      <button class="pin-key" onclick="tipsPin('7')">7</button>
+      <button class="pin-key" onclick="tipsPin('8')">8</button>
+      <button class="pin-key" onclick="tipsPin('9')">9</button>
+      <button class="pin-key pin-cancel" onclick="tipsPinCancel()">✕</button>
+      <button class="pin-key" onclick="tipsPin('0')">0</button>
+      <button class="pin-key pin-del" onclick="tipsPinDel()">⌫</button>
+    </div>
+  </div>
+
+  <!-- ══════════ PIN OVERLAY (SETTINGS) ══════════ -->
   <div id="pin-overlay" style="
     display:none; position:fixed; inset:0; z-index:999;
     background:rgba(13,27,42,0.97);
@@ -1329,6 +1434,89 @@ function resetForm() {
   selectAns(0);
   document.getElementById('form-mode-label').textContent = '📝 THÊM / SỬA CÂU HỎI';
   refreshAdminList();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  TIPS
+// ═══════════════════════════════════════════════════════════════
+function openTips() {
+  renderTipsContent();
+  gotoScreen('tips-screen');
+}
+
+function renderTipsContent() {
+  const content = localStorage.getItem('tips_content') || '';
+  const el = document.getElementById('tips-display-content');
+  if (content.trim()) {
+    el.innerHTML = '';
+    el.textContent = content;
+    el.style.fontStyle = 'normal';
+  } else {
+    el.innerHTML = '<div class="tips-empty">Chưa có mẹo nào. Admin hãy thêm mẹo vào!</div>';
+  }
+}
+
+function openTipsEdit() {
+  tipsPinBuffer = '';
+  updateTipsPinDots();
+  document.getElementById('pin-tips-error').textContent = '';
+  document.getElementById('pin-tips-overlay').style.display = 'flex';
+}
+
+function saveTips() {
+  const val = document.getElementById('tips-textarea').value.trim();
+  localStorage.setItem('tips_content', val);
+  showToast('✅ Đã lưu mẹo!');
+  goBack();
+  renderTipsContent();
+}
+
+// PIN for tips
+let tipsPinBuffer = '';
+
+function tipsPinCancel() {
+  tipsPinBuffer = '';
+  document.getElementById('pin-tips-overlay').style.display = 'none';
+}
+
+function tipsPinDel() {
+  tipsPinBuffer = tipsPinBuffer.slice(0, -1);
+  updateTipsPinDots();
+}
+
+function tipsPin(digit) {
+  if (tipsPinBuffer.length >= 6) return;
+  tipsPinBuffer += digit;
+  updateTipsPinDots();
+  if (tipsPinBuffer.length === 6) {
+    setTimeout(tipsPinCheck, 120);
+  }
+}
+
+function tipsPinCheck() {
+  if (tipsPinBuffer === SETTINGS_PIN) {
+    document.getElementById('pin-tips-overlay').style.display = 'none';
+    const saved = localStorage.getItem('tips_content') || '';
+    document.getElementById('tips-textarea').value = saved;
+    gotoScreen('tips-edit-screen');
+  } else {
+    const dots = document.querySelectorAll('#pin-tips-dots .pin-dot');
+    dots.forEach(d => d.classList.add('error'));
+    document.getElementById('pin-tips-error').textContent = 'Sai mật khẩu! Thử lại.';
+    setTimeout(() => {
+      dots.forEach(d => { d.classList.remove('error','filled'); });
+      document.getElementById('pin-tips-error').textContent = '';
+      tipsPinBuffer = '';
+    }, 900);
+  }
+}
+
+function updateTipsPinDots() {
+  const dots = document.querySelectorAll('#pin-tips-dots .pin-dot');
+  dots.forEach((d, i) => {
+    d.classList.toggle('filled', i < tipsPinBuffer.length);
+    d.classList.remove('error');
+  });
 }
 
 // ═══════════════════════════════════════════════════════════════
