@@ -531,6 +531,71 @@ html, body {
   border: none; border-radius: var(--radius);
   font-family: var(--font-main); font-size: 15px; font-weight: 700;
   cursor: pointer; color: var(--white); }
+
+/* ══ PCT SLIDER SETTINGS ══ */
+.pct-row { margin-bottom: 18px; }
+.pct-label-row {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 8px;
+}
+.pct-topic { font-size: 13px; font-weight: 600; color: var(--light); }
+.pct-badge {
+  font-family: var(--font-display);
+  font-size: 12px; font-weight: 700;
+  color: var(--gold); letter-spacing: 0.3px;
+  background: rgba(240,165,0,0.12);
+  padding: 3px 10px; border-radius: 20px;
+  white-space: nowrap;
+}
+.pct-slider {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 6px;
+  border-radius: 3px;
+  background: var(--navy2);
+  outline: none; cursor: pointer;
+}
+.pct-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--gold); border: 3px solid var(--navy);
+  box-shadow: 0 0 6px rgba(240,165,0,0.5);
+  cursor: pointer;
+}
+.pct-slider::-moz-range-thumb {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--gold); border: 3px solid var(--navy);
+  cursor: pointer;
+}
+.pct-bar-wrap {
+  display: flex; height: 10px; border-radius: 5px;
+  overflow: hidden; margin: 14px 0 10px;
+  background: var(--navy2);
+}
+.pct-bar-seg { height: 100%; transition: width 0.3s ease; }
+
+/* ══ PIN OVERLAY ══ */
+#pin-overlay.show { display:flex !important; }
+.pin-dot {
+  width:14px; height:14px; border-radius:50%;
+  border:2px solid var(--grey);
+  background:transparent;
+  transition:background 0.15s, border-color 0.15s;
+}
+.pin-dot.filled { background:var(--gold); border-color:var(--gold); }
+.pin-dot.error  { background:#e74c3c; border-color:#e74c3c; }
+.pin-key {
+  width:72px; height:72px; border-radius:50%;
+  border:2px solid var(--border);
+  background:var(--card);
+  font-family:var(--font-display); font-size:24px; font-weight:700;
+  color:var(--white); cursor:pointer;
+  transition:background 0.1s, transform 0.1s;
+  -webkit-tap-highlight-color:transparent;
+  display:flex; align-items:center; justify-content:center;
+}
+.pin-key:active { background:rgba(240,165,0,0.2); transform:scale(0.92); }
+.pin-cancel { color:var(--grey); font-size:18px; }
+.pin-del    { color:var(--grey); font-size:20px; }
 </style>
 </head>
 <body>
@@ -566,7 +631,7 @@ html, body {
           <span class="btn-label">CẬP NHẬT CÂU HỎI<br><small id="update-sub" style="font-weight:400;opacity:0.8">tải câu hỏi</small></span>
           <span class="btn-arrow">›</span>
         </button>
-        <button class="btn-main btn-settings" onclick="gotoScreen('settings-screen')">
+        <button class="btn-main btn-settings" onclick="openSettings()">
           <span class="btn-icon-big">🗂️</span>
           <span class="btn-label">CÀI ĐẶT CƠ CẤU ĐỀ</span>
           <span class="btn-arrow">›</span>
@@ -692,25 +757,75 @@ html, body {
     </div>
     <div class="scroll-body">
       <div class="settings-card">
-        <h3>📋 Cơ cấu đề thi (tổng 20 câu)</h3>
-        <div class="settings-row">
-          <label>40% Câu Điều Lệnh Nội vụ</label>
-          <input type="number" class="num-input" id="s-nv" value="8" min="0" max="20" oninput="updateTotal()">
+        <h3>📋 Cơ cấu đề thi — Tỉ lệ % (tổng 20 câu)</h3>
+
+        <div class="pct-row">
+          <div class="pct-label-row">
+            <span class="pct-topic">🏛️ Điều Lệnh Nội vụ</span>
+            <span class="pct-badge" id="badge-nv">40%</span>
+          </div>
+          <input type="range" class="pct-slider" id="s-nv" min="0" max="100" step="5" value="40" oninput="updatePct()">
         </div>
-        <div class="settings-row">
-          <label>20% Câu Điều Lệnh Đội ngũ và Nghi lễ</label>
-          <input type="number" class="num-input" id="s-dn" value="4" min="0" max="20" oninput="updateTotal()">
+
+        <div class="pct-row">
+          <div class="pct-label-row">
+            <span class="pct-topic">🎖️ Đội ngũ &amp; Nghi lễ</span>
+            <span class="pct-badge" id="badge-dn">20%</span>
+          </div>
+          <input type="range" class="pct-slider" id="s-dn" min="0" max="100" step="5" value="20" oninput="updatePct()">
         </div>
-        <div class="settings-row">
-          <label>40% Câu Xử lý vi phạm</label>
-          <input type="number" class="num-input" id="s-xl" value="8" min="0" max="20" oninput="updateTotal()">
+
+        <div class="pct-row">
+          <div class="pct-label-row">
+            <span class="pct-topic">⚖️ Xử lý vi phạm</span>
+            <span class="pct-badge" id="badge-xl">40%</span>
+          </div>
+          <input type="range" class="pct-slider" id="s-xl" min="0" max="100" step="5" value="40" oninput="updatePct()">
         </div>
-        <div class="settings-total">Tổng: <span id="total-display">20</span> / 20 câu</div>
+
+        <div class="pct-bar-wrap">
+          <div class="pct-bar-seg" id="bar-nv" style="width:40%;background:var(--blue2)"></div>
+          <div class="pct-bar-seg" id="bar-dn" style="width:20%;background:var(--gold)"></div>
+          <div class="pct-bar-seg" id="bar-xl" style="width:40%;background:var(--green2)"></div>
+        </div>
+
+        <div class="settings-total">
+          Tổng: <span id="total-pct" style="color:var(--gold)">100%</span> &nbsp;→&nbsp; <span id="total-display" style="color:var(--gold)">20</span> câu
+        </div>
       </div>
       <button class="mb-btn" style="background:linear-gradient(135deg,#1a6b3c,var(--green))" onclick="saveSettings()">💾 LƯU CÀI ĐẶT</button>
     </div>
   </div>
 
+
+  <!-- ══════════ PIN OVERLAY ══════════ -->
+  <div id="pin-overlay" style="
+    display:none; position:fixed; inset:0; z-index:999;
+    background:rgba(13,27,42,0.97);
+    flex-direction:column; align-items:center; justify-content:center; gap:20px;
+  ">
+    <div style="font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--gold);letter-spacing:1px;">🔒 NHẬP MẬT KHẨU</div>
+    <div style="font-size:13px;color:var(--grey);">Cài đặt cơ cấu đề thi</div>
+    <div id="pin-dots" style="display:flex;gap:14px;margin:4px 0;">
+      <span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span>
+      <span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span>
+    </div>
+    <div id="pin-error" style="font-size:12px;color:#e74c3c;min-height:18px;"></div>
+    <div style="display:grid;grid-template-columns:repeat(3,72px);gap:10px;">
+      <button class="pin-key" onclick="pinPress('1')">1</button>
+      <button class="pin-key" onclick="pinPress('2')">2</button>
+      <button class="pin-key" onclick="pinPress('3')">3</button>
+      <button class="pin-key" onclick="pinPress('4')">4</button>
+      <button class="pin-key" onclick="pinPress('5')">5</button>
+      <button class="pin-key" onclick="pinPress('6')">6</button>
+      <button class="pin-key" onclick="pinPress('7')">7</button>
+      <button class="pin-key" onclick="pinPress('8')">8</button>
+      <button class="pin-key" onclick="pinPress('9')">9</button>
+      <button class="pin-key pin-cancel" onclick="pinCancel()">✕</button>
+      <button class="pin-key" onclick="pinPress('0')">0</button>
+      <button class="pin-key pin-del" onclick="pinDel()">⌫</button>
+    </div>
+  </div>
 </div><!-- #app -->
 
 <!-- Detail Popup -->
@@ -756,7 +871,7 @@ const GITHUB_VER_URL  = 'https://raw.githubusercontent.com/MasonJavis2k/Cauhoidi
 // ═══════════════════════════════════════════════════════════════
 let allQuestions = [];
 let dataVersion  = 'N/A';
-let topicCounts  = { noi_vu: 8, doi_ngu: 4, xu_ly: 8 };
+let topicCounts  = { noi_vu: 40, doi_ngu: 20, xu_ly: 40 }; // stored as %
 
 let quizQueue    = [];   // array, index 0 = current
 let quizMode     = '';   // 'exam' | 'all'
@@ -795,7 +910,12 @@ function loadLocal() {
       }
     }
     const st = localStorage.getItem('quiz_settings');
-    if (st) topicCounts = { ...topicCounts, ...JSON.parse(st) };
+    if (st) {
+      const loaded = JSON.parse(st);
+      // Nếu giá trị cũ là số câu (<=20) thì bỏ qua, dùng mặc định %
+      const isPercent = (loaded.noi_vu + loaded.doi_ngu + loaded.xu_ly) > 20;
+      if (isPercent) topicCounts = { ...topicCounts, ...loaded };
+    }
   } catch(e) {}
 }
 
@@ -911,7 +1031,8 @@ function startQuiz(mode) {
       if (tm[cat]) tm[cat].push(q); else tm.noi_vu.push(q);
     }
     let selected = [];
-    for (const [topic, needed] of Object.entries(topicCounts)) {
+    const examCounts = pctToCounts(topicCounts.noi_vu, topicCounts.doi_ngu, topicCounts.xu_ly);
+    for (const [topic, needed] of Object.entries(examCounts)) {
       const pool = shuffle([...tm[topic]]);
       selected.push(...pool.slice(0, needed));
     }
@@ -1213,24 +1334,64 @@ function resetForm() {
 // ═══════════════════════════════════════════════════════════════
 //  SETTINGS
 // ═══════════════════════════════════════════════════════════════
-function updateTotal() {
-  const nv = parseInt(document.getElementById('s-nv').value)||0;
-  const dn = parseInt(document.getElementById('s-dn').value)||0;
-  const xl = parseInt(document.getElementById('s-xl').value)||0;
-  const total = nv + dn + xl;
-  const el = document.getElementById('total-display');
-  el.textContent = total;
-  el.style.color = total === 20 ? 'var(--gold)' : '#e74c3c';
+// Convert % ratios -> integer counts summing to exactly 20
+function pctToCounts(pNv, pDn, pXl) {
+  const total = 20;
+  const sum = pNv + pDn + pXl;
+  if (sum === 0) return { noi_vu: 7, doi_ngu: 6, xu_ly: 7 };
+  let cNv = Math.floor(pNv / sum * total);
+  let cDn = Math.floor(pDn / sum * total);
+  let cXl = Math.floor(pXl / sum * total);
+  const rem = total - cNv - cDn - cXl;
+  const fracs = [
+    { key: 'nv', f: (pNv / sum * total) - cNv },
+    { key: 'dn', f: (pDn / sum * total) - cDn },
+    { key: 'xl', f: (pXl / sum * total) - cXl },
+  ].sort((a, b) => b.f - a.f);
+  for (let i = 0; i < rem; i++) {
+    if (fracs[i].key === 'nv') cNv++;
+    else if (fracs[i].key === 'dn') cDn++;
+    else cXl++;
+  }
+  return { noi_vu: cNv, doi_ngu: cDn, xu_ly: cXl };
 }
 
+function updatePct() {
+  const pNv = parseInt(document.getElementById('s-nv').value) || 0;
+  const pDn = parseInt(document.getElementById('s-dn').value) || 0;
+  const pXl = parseInt(document.getElementById('s-xl').value) || 0;
+  const sumPct = pNv + pDn + pXl;
+  const counts = pctToCounts(pNv, pDn, pXl);
+  document.getElementById('badge-nv').textContent = pNv + '%';
+  document.getElementById('badge-dn').textContent = pDn + '%';
+  document.getElementById('badge-xl').textContent = pXl + '%';
+  const safeSum = sumPct || 1;
+  document.getElementById('bar-nv').style.width = (pNv / safeSum * 100) + '%';
+  document.getElementById('bar-dn').style.width = (pDn / safeSum * 100) + '%';
+  document.getElementById('bar-xl').style.width = (pXl / safeSum * 100) + '%';
+  const totalEl = document.getElementById('total-pct');
+  const dispEl  = document.getElementById('total-display');
+  totalEl.textContent = sumPct + '%';
+  totalEl.style.color = sumPct === 100 ? 'var(--gold)' : '#e74c3c';
+  dispEl.textContent  = counts.noi_vu + counts.doi_ngu + counts.xu_ly;
+  dispEl.style.color  = 'var(--gold)';
+}
+
+function updateTotal() { updatePct(); }
+
 function saveSettings() {
-  const nv = parseInt(document.getElementById('s-nv').value)||0;
-  const dn = parseInt(document.getElementById('s-dn').value)||0;
-  const xl = parseInt(document.getElementById('s-xl').value)||0;
-  if (nv + dn + xl !== 20) { showToast(`Tổng phải bằng 20 câu! (Hiện: ${nv+dn+xl})`); return; }
-  topicCounts = { noi_vu: nv, doi_ngu: dn, xu_ly: xl };
+  const pNv = parseInt(document.getElementById('s-nv').value) || 0;
+  const pDn = parseInt(document.getElementById('s-dn').value) || 0;
+  const pXl = parseInt(document.getElementById('s-xl').value) || 0;
+  const sumPct = pNv + pDn + pXl;
+  if (sumPct !== 100) {
+    showToast('Tổng tỉ lệ phải bằng 100%! (Hiện: ' + sumPct + '%)');
+    return;
+  }
+  topicCounts = { noi_vu: pNv, doi_ngu: pDn, xu_ly: pXl };
   saveLocal();
-  showToast('💾 Đã lưu cài đặt!');
+  const counts = pctToCounts(pNv, pDn, pXl);
+  showToast('Đã lưu! NV:' + counts.noi_vu + ' · ĐN:' + counts.doi_ngu + ' · XL:' + counts.xu_ly + ' câu');
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1292,6 +1453,64 @@ window.addEventListener('load', () => {
       });
   }
 });
+
+// ═══════════════════════════════════════════════════════════════
+//  PIN / PASSWORD GATE
+// ═══════════════════════════════════════════════════════════════
+const SETTINGS_PIN = '209200'; // ← đổi mật khẩu tại đây
+let pinBuffer = '';
+
+function openSettings() {
+  pinBuffer = '';
+  updatePinDots();
+  document.getElementById('pin-error').textContent = '';
+  document.getElementById('pin-overlay').classList.add('show');
+}
+
+function pinCancel() {
+  pinBuffer = '';
+  document.getElementById('pin-overlay').classList.remove('show');
+}
+
+function pinDel() {
+  pinBuffer = pinBuffer.slice(0, -1);
+  updatePinDots();
+}
+
+function pinPress(digit) {
+  if (pinBuffer.length >= 6) return;
+  pinBuffer += digit;
+  updatePinDots();
+  if (pinBuffer.length === 6) {
+    setTimeout(pinCheck, 120);
+  }
+}
+
+function pinCheck() {
+  if (pinBuffer === SETTINGS_PIN) {
+    document.getElementById('pin-overlay').classList.remove('show');
+    gotoScreen('settings-screen');
+  } else {
+    // shake & error
+    const dots = document.querySelectorAll('.pin-dot');
+    dots.forEach(d => d.classList.add('error'));
+    document.getElementById('pin-error').textContent = 'Sai mật khẩu! Thử lại.';
+    setTimeout(() => {
+      dots.forEach(d => { d.classList.remove('error','filled'); });
+      document.getElementById('pin-error').textContent = '';
+      pinBuffer = '';
+    }, 900);
+  }
+}
+
+function updatePinDots() {
+  const dots = document.querySelectorAll('.pin-dot');
+  dots.forEach((d, i) => {
+    d.classList.toggle('filled', i < pinBuffer.length);
+    d.classList.remove('error');
+  });
+}
+
 </script>
 </body>
 </html>
