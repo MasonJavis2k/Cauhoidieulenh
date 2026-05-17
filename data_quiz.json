@@ -1,5 +1,5 @@
 {
-    "version": "1.0.6",
+    "version": "1.0.7",
     "questions": [
         [
             "Thông tư quy định về Điều lệnh nội vụ CAND gồm có bao nhiêu chương, bao nhiêu điều?",
@@ -819,9 +819,9 @@
         ],
         [
             "Trong hàng ngũ, CBCS nếu muốn ra khỏi hàng hoặc phát biểu ý kiến thì giơ cánh tay nào lên và chếch về trước bao nhiêu độ.",
-            "Tay trái, 600.",
-            "Tay phải, 450.",
-            "Tay phải, 600.",
+            "Tay trái, 60°.",
+            "Tay phải, 45°.",
+            "Tay phải, 60°.",
             0,
             "doi_ngu"
         ],
