@@ -156,6 +156,7 @@ html, body {
 .btn-main .btn-arrow { color: rgba(255,255,255,0.4); font-size: 16px; }
 
 .btn-exam    { background: linear-gradient(135deg, #c0392b, #922b21); box-shadow: 0 4px 20px rgba(192,57,43,0.4); }
+.btn-tt113   { background: linear-gradient(135deg, #b7410e, #e67e22); box-shadow: 0 4px 20px rgba(230,126,34,0.35); }
 .btn-tips    { background: linear-gradient(135deg, #5d3a8e, #8e44ad); box-shadow: 0 4px 20px rgba(142,68,173,0.35); }
 .btn-all     { background: linear-gradient(135deg, #1a6b3c, #27ae60); box-shadow: 0 4px 20px rgba(39,174,96,0.3); }
 .btn-admin   { background: linear-gradient(135deg, #1a5276, #2980b9); box-shadow: 0 4px 20px rgba(41,128,185,0.3); }
@@ -658,6 +659,11 @@ html, body {
           <span class="btn-label">THI THỬ<br><small style="font-weight:400;opacity:0.8">20 câu · 6 phút</small></span>
           <span class="btn-arrow">›</span>
         </button>
+        <button class="btn-main btn-tt113" onclick="startQuiz('tt113')">
+          <span class="btn-icon-big">📋</span>
+          <span class="btn-label">LUYỆN TẬP THÔNG TƯ 113<br><small style="font-weight:400;opacity:0.8"></small></span>
+          <span class="btn-arrow">›</span>
+        </button>
         <button class="btn-main btn-tips" onclick="openTips()">
           <span class="btn-icon-big">💡</span>
           <span class="btn-label">MẸO TRẢ LỜI CÂU HỎI<br><small style="font-weight:400;opacity:0.8">Chiến lược & kinh nghiệm thi</small></span>
@@ -687,7 +693,7 @@ html, body {
 
       <div class="menu-footer">
         <div>
-          <div class="menu-footer-text">App v<span id="app-ver">2.0</span></div>
+          <div class="menu-footer-text">App v<span id="app-ver">2.1</span></div>
           <div class="menu-footer-text">Câu hỏi v<span id="data-ver">N/A</span></div>
         </div>
         <div id="q-count-badge" class="version-badge">0 câu</div>
@@ -723,6 +729,8 @@ html, body {
 
     <div class="scroll-body" style="padding-top:0">
       <div class="question-card" id="question-text"></div>
+      <!-- Nút mẹo TT113 -->
+
       <div class="options" id="options-container"></div>
     </div>
 
@@ -874,6 +882,7 @@ html, body {
   </div>
 
 
+  <!-- ══════════ TT113 HINT POPUP ══════════ -->
   <!-- ══════════ NOTICE POPUP ══════════ -->
   <div id="notice-popup" style="
     display:none; position:fixed; inset:0; z-index:1100;
@@ -1030,7 +1039,7 @@ html, body {
 // ═══════════════════════════════════════════════════════════════
 //  CONSTANTS & CONFIG
 // ═══════════════════════════════════════════════════════════════
-const APP_VERSION = '2.0';
+const APP_VERSION = '2.1';
 const GITHUB_DATA_URL = 'https://raw.githubusercontent.com/MasonJavis2k/Cauhoidieulenh/main/data_quiz.json';
 const GITHUB_VER_URL  = 'https://raw.githubusercontent.com/MasonJavis2k/Cauhoidieulenh/refs/heads/main/version.txt';
 const GITHUB_TIPS_URL = 'https://raw.githubusercontent.com/MasonJavis2k/Cauhoidieulenh/main/tips.txt';
@@ -1043,6 +1052,7 @@ let dataVersion  = 'N/A';
 let topicCounts  = { noi_vu: 40, doi_ngu: 20, xu_ly: 40 }; // stored as %
 
 let quizQueue    = [];   // array, index 0 = current
+let currentIndex = 0;    // vị trí câu hiện tại (cho chế độ all/tt113)
 let quizMode     = '';   // 'exam' | 'all'
 let score        = 0;
 let reviewData   = [];
@@ -1192,7 +1202,16 @@ function startQuiz(mode) {
   selectedIdx = null;
   isAnswered  = false;
 
-  if (mode === 'exam') {
+  if (mode === 'tt113') {
+    quizQueue  = allQuestions.filter(q => q[0] && q[0].includes('113'));
+    if (!quizQueue.length) { showToast('Không tìm thấy câu hỏi Thông tư 113!'); return; }
+    quizQueue  = shuffle([...quizQueue]);
+    totalCount = quizQueue.length;
+    currentIndex = 0;
+    timerVal   = 0;
+    clearInterval(timerInterval);
+    document.getElementById('timer-display').textContent = '';
+  } else if (mode === 'exam') {
     // Phân loại theo topic
     const tm = { noi_vu:[], doi_ngu:[], xu_ly:[] };
     for (const q of allQuestions) {
@@ -1213,13 +1232,14 @@ function startQuiz(mode) {
   } else {
     quizQueue  = [...allQuestions];
     totalCount = quizQueue.length;
+    currentIndex = 0;
     timerVal   = 0;
     clearInterval(timerInterval);
     document.getElementById('timer-display').textContent = '';
   }
 
-  document.getElementById('quiz-title').textContent = mode === 'exam' ? 'Thi thử' : 'Làm tất cả';
-  document.getElementById('all-nav').style.display   = mode === 'all' ? 'flex' : 'none';
+  document.getElementById('quiz-title').textContent = mode === 'exam' ? 'Thi thử' : mode === 'tt113' ? 'TT 113' : 'Làm tất cả';
+  document.getElementById('all-nav').style.display   = (mode === 'all' || mode === 'tt113') ? 'flex' : 'none';
   document.getElementById('exam-actions').style.display = mode === 'exam' ? 'flex' : 'none';
 
   gotoScreen('quiz-screen');
@@ -1232,7 +1252,7 @@ function renderQuestion() {
   selectedIdx = null;
   isAnswered  = false;
 
-  const done = totalCount - quizQueue.length;
+  const done = (quizMode === 'all' || quizMode === 'tt113') ? currentIndex : totalCount - quizQueue.length;
   const pct  = totalCount > 0 ? (done / totalCount * 100) : 0;
   document.getElementById('prog-fill').style.width = pct + '%';
   document.getElementById('q-counter').textContent = `Câu ${done + 1} / ${totalCount}`;
@@ -1258,7 +1278,7 @@ function handleClick(idx) {
   const correct = q[4];
   const opts = document.querySelectorAll('.option-btn');
 
-  if (quizMode === 'all') {
+  if (quizMode === 'all' || quizMode === 'tt113') {
     isAnswered = true;
     opts.forEach((o, i) => {
       o.classList.add('disabled');
@@ -1313,6 +1333,7 @@ function prevQuestion() {
   if (quizQueue.length < 2) return;
   const last = quizQueue.pop();
   quizQueue.unshift(last);
+  if (currentIndex > 0) currentIndex--;
   renderQuestion();
 }
 
@@ -1320,6 +1341,11 @@ function nextNoSave() {
   if (!quizQueue.length) return;
   const q = quizQueue.shift();
   quizQueue.push(q);
+  currentIndex++;
+  if (currentIndex >= totalCount) {
+    finishQuiz();
+    return;
+  }
   renderQuestion();
 }
 
@@ -1589,8 +1615,6 @@ function updateTipsPinDots() {
   });
 }
 
-// ═══════════════════════════════════════════════════════════════
-//  NOTICE
 // ═══════════════════════════════════════════════════════════════
 const GITHUB_NOTICE_URL = 'https://raw.githubusercontent.com/MasonJavis2k/Cauhoidieulenh/main/notice.txt';
 
