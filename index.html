@@ -661,7 +661,7 @@ html, body {
         </button>
         <button class="btn-main btn-tt113" onclick="startQuiz('tt113')">
           <span class="btn-icon-big">📋</span>
-          <span class="btn-label">LUYỆN TẬP THÔNG TƯ 113<br><small style="font-weight:400;opacity:0.8"></small></span>
+          <span class="btn-label">LUYỆN TẬP THÔNG TƯ 113</span>
           <span class="btn-arrow">›</span>
         </button>
         <button class="btn-main btn-tips" onclick="openTips()">
@@ -721,10 +721,9 @@ html, body {
 
     <!-- All-mode nav -->
     <div class="all-nav" id="all-nav" style="display:none">
-      <button class="btn-action muted" onclick="prevQuestion()">❮ TRƯỚC</button>
-      <button class="btn-action warning" onclick="showAnswer()">👁 ĐÁP ÁN</button>
-      <button class="btn-action success" onclick="nextNoSave()">SAU ❯</button>
-      <button class="btn-action muted" style="color:#e74c3c" onclick="finishQuiz()">🛑</button>
+      <button class="btn-action warning" id="btn-show-answer" onclick="showAnswer()">👁 ĐÁP ÁN</button>
+      <button class="btn-action success" id="btn-next-all" onclick="nextNoSave()">BỎ QUA ❯</button>
+      <button class="btn-action muted" style="color:#e74c3c" onclick="finishQuiz()">Kết thúc</button>
     </div>
 
     <div class="scroll-body" style="padding-top:0">
@@ -1260,6 +1259,14 @@ function renderQuestion() {
   document.getElementById('feedback-bar').style.color = '';
   document.getElementById('question-text').textContent = q[0];
 
+  // Reset nút nav về trạng thái chưa trả lời
+  if (quizMode === 'all' || quizMode === 'tt113') {
+    const btnNext = document.getElementById('btn-next-all');
+    const btnShow = document.getElementById('btn-show-answer');
+    if (btnNext) { btnNext.textContent = 'BỎ QUA ❯'; btnNext.className = 'btn-action success'; }
+    if (btnShow) btnShow.style.display = '';
+  }
+
   const container = document.getElementById('options-container');
   container.innerHTML = '';
   for (let i = 0; i < 3; i++) {
@@ -1295,6 +1302,11 @@ function handleClick(idx) {
       correct_ans: `${'ABC'[correct]}. ${q[correct+1]}`,
       result: ok ? 'Đúng' : 'Sai'
     });
+    // Đổi nút sau khi đã trả lời
+    const btnNext = document.getElementById('btn-next-all');
+    const btnShow = document.getElementById('btn-show-answer');
+    if (btnNext) { btnNext.textContent = 'TIẾP THEO ❯'; btnNext.className = 'btn-action primary'; }
+    if (btnShow) btnShow.style.display = 'none';
   } else {
     // exam: chỉ highlight viền xanh
     opts.forEach((o, i) => {
@@ -1340,7 +1352,10 @@ function prevQuestion() {
 function nextNoSave() {
   if (!quizQueue.length) return;
   const q = quizQueue.shift();
-  quizQueue.push(q);
+  if (!isAnswered) {
+    // Chưa trả lời → bỏ qua, đưa xuống cuối
+    quizQueue.push(q);
+  }
   currentIndex++;
   if (currentIndex >= totalCount) {
     finishQuiz();
