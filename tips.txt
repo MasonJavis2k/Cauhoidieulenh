@@ -105,7 +105,7 @@ Mẹo: Đơn vị càng lớn, khoảng cách càng xa.
 
 ⭐Xử lý vi phạm⭐
 --------------
-! Tất cả các đáp án "Không xét tặng danh hiệu thi đua năm" của các câu hỏi Thông tư 113 đều là đáp án sai, còn lại chỉ có Phê bình và Hạ 1 hoặc 2 bậc thi đua/danh hiệu
+! Tất cả các đáp án "Không xét tặng danh hiệu thi đua năm" của các câu hỏi Thông tư 113 đều là đáp án sai, còn lại chỉ có Phê bình và Hạ 1 hoặc 2 bậc thi đua/danh hiệu/xếp loại
 
 Khung xử lý vi phạm CBCS (cá nhân)
 Có 4 mức từ nhẹ đến nặng:
