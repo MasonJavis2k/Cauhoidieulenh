@@ -618,7 +618,7 @@ html, body {
 
 /* ══ EXAM QUESTION GRID ══ */
 .q-cell {
-  aspect-ratio: 1;
+  width: 100%; max-width: 36px; height: 32px;
   border-radius: 6px;
   border: 2px solid rgba(255,255,255,0.2);
   background: rgba(255,255,255,0.06);
@@ -721,7 +721,7 @@ html, body {
 
       <div class="menu-footer">
         <div>
-          <div class="menu-footer-text">App v<span id="app-ver">2.2</span></div>
+          <div class="menu-footer-text">App v<span id="app-ver">2.1</span></div>
           <div class="menu-footer-text">Câu hỏi v<span id="data-ver">N/A</span></div>
         </div>
         <div id="q-count-badge" class="version-badge">0 câu</div>
@@ -756,7 +756,7 @@ html, body {
 
     <!-- Exam question grid -->
     <div id="exam-q-grid" style="display:none;padding:8px 16px 4px;flex-shrink:0;">
-      <div id="q-grid-cells" style="display:grid;grid-template-columns:repeat(10,1fr);gap:5px;"></div>
+      <div id="q-grid-cells" style="display:grid;grid-template-columns:repeat(10,minmax(0,36px));gap:5px;justify-content:center;"></div>
     </div>
 
     <div class="scroll-body" style="padding-top:0">
@@ -1102,7 +1102,7 @@ html, body {
 // ═══════════════════════════════════════════════════════════════
 //  CONSTANTS & CONFIG
 // ═══════════════════════════════════════════════════════════════
-const APP_VERSION = '2.2';
+const APP_VERSION = '2.4';
 const GITHUB_DATA_URL = 'https://raw.githubusercontent.com/MasonJavis2k/Cauhoidieulenh/main/data_quiz.json';
 const GITHUB_VER_URL  = 'https://raw.githubusercontent.com/MasonJavis2k/Cauhoidieulenh/refs/heads/main/version.txt';
 const GITHUB_TIPS_URL = 'https://raw.githubusercontent.com/MasonJavis2k/Cauhoidieulenh/main/tips.txt';
