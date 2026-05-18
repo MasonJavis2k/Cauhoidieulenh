@@ -462,9 +462,6 @@ html, body {
 }
 #total-display { font-weight: 700; color: var(--gold); }
 
-/* ══════════════════════════ NOTICE TOGGLE ══════════════════════════ */
-#notice-toggle:checked + #notice-toggle-track { background: var(--green) !important; }
-#notice-toggle:checked ~ #notice-toggle-thumb { transform: translateX(22px); }
 
 #tips-screen { background: var(--navy); }
 .tips-content {
@@ -883,31 +880,8 @@ html, body {
 
       <!-- NOTICE ADMIN -->
       <div class="settings-card" style="margin-top:14px;">
-        <h3>📢 Quản lý thông báo</h3>
-        <div style="font-size:12px;color:var(--grey);margin:8px 0 14px;">Thông báo hiện lên mỗi khi ai vào app. Lấy nội dung từ file <code style="color:var(--gold)">notice.txt</code> trên GitHub.</div>
-
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-          <span style="font-size:14px;font-weight:600;">Bật thông báo</span>
-          <label style="position:relative;display:inline-block;width:48px;height:26px;">
-            <input type="checkbox" id="notice-toggle" style="opacity:0;width:0;height:0;" onchange="updateToggleUI();saveNoticeSettings()">
-            <span id="notice-toggle-track" style="
-              position:absolute;inset:0;background:#334;border-radius:26px;cursor:pointer;transition:background 0.2s;
-            "></span>
-            <span id="notice-toggle-thumb" style="
-              position:absolute;left:3px;top:3px;width:20px;height:20px;
-              background:#fff;border-radius:50%;transition:transform 0.2s;pointer-events:none;
-            "></span>
-          </label>
-        </div>
-
-        <div style="font-size:13px;font-weight:600;margin-bottom:6px;">Ngày hết hạn thông báo</div>
-        <div style="font-size:11px;color:var(--grey);margin-bottom:8px;">Qua ngày này, thông báo tự tắt dù đang bật</div>
-        <input type="date" id="notice-expire" onchange="saveNoticeSettings()" style="
-          width:100%; background:var(--navy2); border:1px solid var(--border);
-          border-radius:10px; color:var(--white); font-family:var(--font-main);
-          font-size:14px; padding:10px 14px; outline:none;
-        ">
-        <div id="notice-status" style="font-size:12px;color:var(--grey);margin-top:8px;"></div>
+        <h3>&#128226; Quản lý thông báo</h3>
+        <div style="font-size:12px;color:var(--grey);margin:8px 0 0;">Thông báo hiện lên mỗi khi ai vào app. Lấy nội dung từ file <code style="color:var(--gold)">notice.txt</code> trên GitHub.<br><br>Muốn <b style="color:var(--white)">tắt thông báo</b>: xóa nội dung file <code style="color:var(--gold)">notice.txt</code> là xong.</div>
       </div>
     </div>
   </div>
@@ -957,7 +931,7 @@ html, body {
         <div class="tips-empty">Chưa có mẹo nào. Admin hãy thêm mẹo vào!</div>
       </div>
       <button class="tips-edit-btn" onclick="openTipsEdit()" style="opacity:0.5;font-size:12px;padding:10px">
-        🔒 Chỉnh sửa mẹo
+        🔒 Chỉnh sửa mẹo → sửa file tips.txt trên GitHub
       </button>
     </div>
   </div>
@@ -1102,7 +1076,7 @@ html, body {
 // ═══════════════════════════════════════════════════════════════
 //  CONSTANTS & CONFIG
 // ═══════════════════════════════════════════════════════════════
-const APP_VERSION = '2.5';
+const APP_VERSION = '2.4';
 const GITHUB_DATA_URL = 'https://raw.githubusercontent.com/MasonJavis2k/Cauhoidieulenh/main/data_quiz.json';
 const GITHUB_VER_URL  = 'https://raw.githubusercontent.com/MasonJavis2k/Cauhoidieulenh/refs/heads/main/version.txt';
 const GITHUB_TIPS_URL = 'https://raw.githubusercontent.com/MasonJavis2k/Cauhoidieulenh/main/tips.txt';
@@ -1823,65 +1797,11 @@ function updateTipsPinDots() {
 // ═══════════════════════════════════════════════════════════════
 const GITHUB_NOTICE_URL = 'https://raw.githubusercontent.com/MasonJavis2k/Cauhoidieulenh/main/notice.txt';
 
-function saveNoticeSettings() {
-  const on = document.getElementById('notice-toggle').checked;
-  const exp = document.getElementById('notice-expire').value;
-  localStorage.setItem('notice_on', on ? '1' : '0');
-  localStorage.setItem('notice_expire', exp);
-  updateNoticeStatus();
-}
-
-function loadNoticeSettings() {
-  const on = localStorage.getItem('notice_on') !== '0'; // mặc định bật
-  const exp = localStorage.getItem('notice_expire') || '';
-  const tog = document.getElementById('notice-toggle');
-  if (tog) {
-    tog.checked = on;
-    updateToggleUI();
-  }
-  const expEl = document.getElementById('notice-expire');
-  if (expEl) expEl.value = exp;
-  updateNoticeStatus();
-}
-
-function updateToggleUI() {
-  const on = document.getElementById('notice-toggle').checked;
-  document.getElementById('notice-toggle-track').style.background = on ? 'var(--green)' : '#334';
-  document.getElementById('notice-toggle-thumb').style.transform = on ? 'translateX(22px)' : '';
-}
-
-function updateNoticeStatus() {
-  const on = document.getElementById('notice-toggle') && document.getElementById('notice-toggle').checked;
-  const exp = document.getElementById('notice-expire') && document.getElementById('notice-expire').value;
-  const el = document.getElementById('notice-status');
-  if (!el) return;
-  if (!on) { el.textContent = '⛔ Thông báo đang TẮT'; el.style.color = '#e74c3c'; return; }
-  if (exp) {
-    const today = new Date().toISOString().slice(0,10);
-    if (exp < today) { el.textContent = '⚠️ Đã hết hạn ngày ' + exp + ' — thông báo tự tắt'; el.style.color = 'var(--gold)'; return; }
-    el.textContent = '✅ Đang BẬT · Hết hạn: ' + exp; el.style.color = 'var(--green)';
-  } else {
-    el.textContent = '✅ Đang BẬT · Không có ngày hết hạn'; el.style.color = 'var(--green)';
-  }
-}
-
-function shouldShowNotice() {
-  const on = localStorage.getItem('notice_on') !== '0';
-  if (!on) return false;
-  const exp = localStorage.getItem('notice_expire') || '';
-  if (exp) {
-    const today = new Date().toISOString().slice(0,10);
-    if (exp < today) return false;
-  }
-  return true;
-}
-
 function closeNotice() {
   document.getElementById('notice-popup').style.display = 'none';
 }
 
 function checkAndShowNotice() {
-  if (!shouldShowNotice()) return;
   fetch(GITHUB_NOTICE_URL + '?t=' + Date.now())
     .then(r => { if (!r.ok) throw new Error(); return r.text(); })
     .then(text => {
@@ -2028,7 +1948,6 @@ function openSettings() {
   updatePinDots();
   document.getElementById('pin-error').textContent = '';
   document.getElementById('pin-overlay').classList.add('show');
-  setTimeout(loadNoticeSettings, 200);
 }
 
 function pinCancel() {
