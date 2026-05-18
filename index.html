@@ -616,7 +616,35 @@ html, body {
 }
 .pct-bar-seg { height: 100%; transition: width 0.3s ease; }
 
-/* ══ PIN OVERLAY ══ */
+/* ══ EXAM QUESTION GRID ══ */
+.q-cell {
+  aspect-ratio: 1;
+  border-radius: 6px;
+  border: 2px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.06);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-size: 12px; font-weight: 700;
+  color: rgba(255,255,255,0.5);
+  transition: background 0.25s, border-color 0.25s, color 0.25s;
+}
+.q-cell.done {
+  background: rgba(39,174,96,0.25);
+  border-color: var(--green2);
+  color: var(--green2);
+}
+.q-cell.current {
+  border-color: var(--gold2);
+  color: var(--gold2);
+  background: rgba(255,197,61,0.12);
+}
+.q-cell { cursor: pointer; }
+.q-cell:active { transform: scale(0.9); }
+.q-cell.pending {
+  border-color: var(--blue2);
+  color: var(--blue2);
+  background: rgba(52,152,219,0.12);
+}
+
 #pin-overlay.show { display:flex !important; }
 .pin-dot {
   width:14px; height:14px; border-radius:50%;
@@ -693,7 +721,7 @@ html, body {
 
       <div class="menu-footer">
         <div>
-          <div class="menu-footer-text">App v<span id="app-ver">2.1</span></div>
+          <div class="menu-footer-text">App v<span id="app-ver">2.2</span></div>
           <div class="menu-footer-text">Câu hỏi v<span id="data-ver">N/A</span></div>
         </div>
         <div id="q-count-badge" class="version-badge">0 câu</div>
@@ -726,6 +754,11 @@ html, body {
       <button class="btn-action muted" style="color:#e74c3c" onclick="finishQuiz()">Kết thúc</button>
     </div>
 
+    <!-- Exam question grid -->
+    <div id="exam-q-grid" style="display:none;padding:8px 16px 4px;flex-shrink:0;">
+      <div id="q-grid-cells" style="display:grid;grid-template-columns:repeat(10,1fr);gap:5px;"></div>
+    </div>
+
     <div class="scroll-body" style="padding-top:0">
       <div class="question-card" id="question-text"></div>
       <!-- Nút mẹo TT113 -->
@@ -734,9 +767,8 @@ html, body {
     </div>
 
     <!-- Exam actions -->
-    <div class="quiz-actions" id="exam-actions">
-      <button class="btn-action muted" onclick="skipQuestion()">⏳ BỎ QUA</button>
-      <button class="btn-action primary" onclick="confirmAnswer()">TIẾP THEO ❯</button>
+    <div class="quiz-actions" id="exam-actions" style="display:none;">
+      <button class="btn-action danger" style="flex:1" onclick="confirmAnswer()">📝 NỘP BÀI</button>
     </div>
   </div>
 
@@ -1002,6 +1034,38 @@ html, body {
       <button class="pin-key pin-del" onclick="pinDel()">⌫</button>
     </div>
   </div>
+  <!-- ══════════ EXAM CONFIRM DIALOG ══════════ -->
+  <div id="exam-confirm-overlay" style="
+    display:none; position:fixed; inset:0; z-index:1200;
+    background:rgba(13,27,42,0.92);
+    align-items:center; justify-content:center; padding:24px;
+  ">
+    <div style="
+      background:var(--card); border:1px solid var(--border);
+      border-radius:18px; width:100%; max-width:380px;
+      padding:24px 20px 18px; display:flex; flex-direction:column; gap:16px;
+    ">
+      <div style="font-size:18px; text-align:center;">📝</div>
+      <div id="exam-confirm-msg" style="
+        font-size:14px; line-height:1.7; color:var(--light);
+        text-align:center; white-space:pre-line;
+      "></div>
+      <div style="display:flex; gap:10px; margin-top:4px;">
+        <button id="exam-confirm-cancel" style="
+          flex:1; padding:13px; border:1px solid var(--border);
+          border-radius:10px; background:var(--navy2);
+          font-family:var(--font-main); font-size:14px; font-weight:700;
+          color:var(--grey); cursor:pointer;
+        ">Huỷ</button>
+        <button id="exam-confirm-ok" style="
+          flex:1; padding:13px; border:none;
+          border-radius:10px; background:linear-gradient(135deg,#922b21,var(--red));
+          font-family:var(--font-main); font-size:14px; font-weight:700;
+          color:var(--white); cursor:pointer;
+        ">Nộp bài</button>
+      </div>
+    </div>
+  </div>
 </div><!-- #app -->
 
 <!-- Detail Popup -->
@@ -1038,7 +1102,7 @@ html, body {
 // ═══════════════════════════════════════════════════════════════
 //  CONSTANTS & CONFIG
 // ═══════════════════════════════════════════════════════════════
-const APP_VERSION = '2.1';
+const APP_VERSION = '2.2';
 const GITHUB_DATA_URL = 'https://raw.githubusercontent.com/MasonJavis2k/Cauhoidieulenh/main/data_quiz.json';
 const GITHUB_VER_URL  = 'https://raw.githubusercontent.com/MasonJavis2k/Cauhoidieulenh/refs/heads/main/version.txt';
 const GITHUB_TIPS_URL = 'https://raw.githubusercontent.com/MasonJavis2k/Cauhoidieulenh/main/tips.txt';
@@ -1058,6 +1122,9 @@ let reviewData   = [];
 let totalCount   = 0;
 let selectedIdx  = null;
 let isAnswered   = false;
+let examAllQuestions = [];
+let examAnswered     = {};
+let examCurrentIdx   = 0;
 let timerVal     = 0;
 let timerInterval= null;
 let editingIdx   = -1;
@@ -1224,8 +1291,12 @@ function startQuiz(mode) {
       selected.push(...pool.slice(0, needed));
     }
     if (!selected.length) selected = shuffle([...allQuestions]).slice(0, 20);
-    quizQueue  = shuffle(selected);
-    totalCount = quizQueue.length;
+    examAllQuestions = shuffle(selected);
+    examAnswered     = {};
+    examTemp         = {};
+    examCurrentIdx   = 0;
+    quizQueue  = [...examAllQuestions];
+    totalCount = examAllQuestions.length;
     timerVal   = 6 * 60;
     startTimer();
   } else {
@@ -1240,12 +1311,19 @@ function startQuiz(mode) {
   document.getElementById('quiz-title').textContent = mode === 'exam' ? 'Thi thử' : mode === 'tt113' ? 'TT 113' : 'Làm tất cả';
   document.getElementById('all-nav').style.display   = (mode === 'all' || mode === 'tt113') ? 'flex' : 'none';
   document.getElementById('exam-actions').style.display = mode === 'exam' ? 'flex' : 'none';
+  document.getElementById('exam-q-grid').style.display  = mode === 'exam' ? 'block' : 'none';
+
+  if (mode === 'exam') buildExamGrid();
 
   gotoScreen('quiz-screen');
   renderQuestion();
 }
 
 function renderQuestion() {
+  if (quizMode === 'exam') {
+    renderExamQuestion(examCurrentIdx);
+    return;
+  }
   if (!quizQueue.length) { finishQuiz(); return; }
   const q = quizQueue[0];
   selectedIdx = null;
@@ -1278,8 +1356,46 @@ function renderQuestion() {
   }
 }
 
+function renderExamQuestion(idx) {
+  if (idx < 0 || idx >= examAllQuestions.length) return;
+  examCurrentIdx = idx;
+  const q = examAllQuestions[idx];
+  // Khôi phục lựa chọn đã lưu (nếu có)
+  selectedIdx = (examTemp[idx] !== undefined) ? examTemp[idx] : null;
+
+  const done = Object.keys(examTemp).length;
+  const pct  = totalCount > 0 ? (done / totalCount * 100) : 0;
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('q-counter').textContent = `Câu ${idx + 1} / ${totalCount}`;
+  document.getElementById('feedback-bar').textContent = '';
+  document.getElementById('feedback-bar').style.color = '';
+  document.getElementById('question-text').textContent = q[0];
+
+  updateExamGrid();
+
+  const container = document.getElementById('options-container');
+  container.innerHTML = '';
+  for (let i = 0; i < 3; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    if (selectedIdx === i) btn.classList.add('selected');
+    btn.innerHTML = `<span class="option-letter">${'ABC'[i]}</span><span class="option-text">${q[i+1]}</span>`;
+    btn.onclick = () => handleClick(i);
+    container.appendChild(btn);
+  }
+}
+
 function handleClick(idx) {
-  if (isAnswered) return;
+  if (quizMode === 'exam') {
+    // Bấm đáp án = chọn (có thể đổi tự do)
+    selectedIdx = idx;
+    examTemp[examCurrentIdx] = idx;
+    document.querySelectorAll('.option-btn').forEach((o, i) => {
+      o.classList.toggle('selected', i === idx);
+    });
+    updateExamGrid();
+    return;
+  }
   selectedIdx = idx;
   const q = quizQueue[0];
   const correct = q[4];
@@ -1302,17 +1418,10 @@ function handleClick(idx) {
       correct_ans: `${'ABC'[correct]}. ${q[correct+1]}`,
       result: ok ? 'Đúng' : 'Sai'
     });
-    // Đổi nút sau khi đã trả lời
     const btnNext = document.getElementById('btn-next-all');
     const btnShow = document.getElementById('btn-show-answer');
     if (btnNext) { btnNext.textContent = 'TIẾP THEO ❯'; btnNext.className = 'btn-action primary'; }
     if (btnShow) btnShow.style.display = 'none';
-  } else {
-    // exam: chỉ highlight viền xanh
-    opts.forEach((o, i) => {
-      o.classList.remove('selected');
-      if (i === idx) o.classList.add('selected');
-    });
   }
 }
 
@@ -1321,7 +1430,45 @@ function showAnswer() {
   handleClick(quizQueue[0][4]);
 }
 
+function doFinishExam() {
+  score = 0; reviewData = [];
+  for (let i = 0; i < examAllQuestions.length; i++) {
+    const si = examTemp[i];
+    const qi = examAllQuestions[i];
+    if (si === undefined) continue; // câu bỏ qua
+    const ok = si === qi[4];
+    if (ok) score++;
+    reviewData.push({
+      question: qi[0],
+      your_ans: `${'ABC'[si]}. ${qi[si+1]}`,
+      correct_ans: `${'ABC'[qi[4]]}. ${qi[qi[4]+1]}`,
+      result: ok ? 'Đúng' : 'Sai'
+    });
+  }
+  finishQuiz();
+}
+
 function confirmAnswer() {
+  if (quizMode === 'exam') {
+    const unansweredList = examAllQuestions.reduce((acc, _, i) => {
+      if (examTemp[i] === undefined) acc.push(i + 1);
+      return acc;
+    }, []);
+
+    if (unansweredList.length > 0) {
+      // Có câu chưa làm → cảnh báo rồi hỏi lại
+      showExamConfirmDialog(
+        `⚠️ Còn ${unansweredList.length} câu chưa làm: câu ${unansweredList.join(', ')}.
+
+Bạn có chắc muốn nộp bài không?`,
+        doFinishExam
+      );
+    } else {
+      // Tất cả đã làm → hỏi xác nhận đơn giản
+      showExamConfirmDialog('Bạn xác nhận nộp bài?', doFinishExam);
+    }
+    return;
+  }
   if (selectedIdx === null) { showToast('Hãy chọn một đáp án!'); return; }
   const q = quizQueue.shift();
   const ok = selectedIdx === q[4];
@@ -1334,6 +1481,7 @@ function confirmAnswer() {
   });
   renderQuestion();
 }
+
 
 function skipQuestion() {
   const q = quizQueue.shift();
@@ -1362,6 +1510,48 @@ function nextNoSave() {
     return;
   }
   renderQuestion();
+}
+
+// ── Exam Grid ────────────────────────────────────────────────────
+function buildExamGrid() {
+  const container = document.getElementById('q-grid-cells');
+  container.innerHTML = '';
+  for (let i = 0; i < examAllQuestions.length; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'q-cell' + (i === 0 ? ' current' : '');
+    cell.id = 'qcell-' + i;
+    cell.textContent = i + 1;
+    cell.onclick = () => jumpToExamQuestion(i);
+    container.appendChild(cell);
+  }
+}
+
+function updateExamGrid() {
+  for (let i = 0; i < examAllQuestions.length; i++) {
+    const cell = document.getElementById('qcell-' + i);
+    if (!cell) continue;
+    cell.className = 'q-cell';
+    if (i === examCurrentIdx) cell.classList.add('current');
+    else if (examTemp[i] !== undefined) cell.classList.add('done');
+  }
+}
+
+function jumpToExamQuestion(idx) {
+  // Nếu câu hiện tại đã chọn nhưng chưa xác nhận thì lưu tạm
+  renderExamQuestion(idx);
+}
+
+
+function showExamConfirmDialog(msg, onConfirm) {
+  document.getElementById('exam-confirm-msg').textContent = msg;
+  document.getElementById('exam-confirm-overlay').style.display = 'flex';
+  document.getElementById('exam-confirm-ok').onclick = () => {
+    document.getElementById('exam-confirm-overlay').style.display = 'none';
+    onConfirm();
+  };
+  document.getElementById('exam-confirm-cancel').onclick = () => {
+    document.getElementById('exam-confirm-overlay').style.display = 'none';
+  };
 }
 
 function exitQuiz() {
