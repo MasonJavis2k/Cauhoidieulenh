@@ -188,7 +188,7 @@ html, body {
 
 .quiz-meta {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 10px 16px 4px;
+  padding: 4px 16px 2px;
   font-size: 12px; color: var(--grey);
   flex-shrink: 0;
 }
@@ -203,9 +203,9 @@ html, body {
 @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
 
 .feedback-bar {
-  text-align: center; padding: 6px 16px;
+  text-align: center; padding: 2px 16px;
   font-size: 15px; font-weight: 700;
-  min-height: 32px; flex-shrink: 0;
+  min-height: 24px; flex-shrink: 0;
   transition: color 0.2s;
 }
 
@@ -742,6 +742,11 @@ html, body {
       <span class="quiz-counter" id="q-counter">Câu 1 / 20</span>
     </div>
 
+    <!-- Exam question grid -->
+    <div id="exam-q-grid" style="display:none;padding:4px 16px 4px;flex-shrink:0;">
+      <div id="q-grid-cells" style="display:grid;grid-template-columns:repeat(10,minmax(0,36px));gap:5px;justify-content:center;"></div>
+    </div>
+
     <div class="feedback-bar" id="feedback-bar"></div>
 
     <!-- All-mode nav -->
@@ -749,11 +754,6 @@ html, body {
       <button class="btn-action warning" id="btn-show-answer" onclick="showAnswer()">👁 ĐÁP ÁN</button>
       <button class="btn-action success" id="btn-next-all" onclick="nextNoSave()">BỎ QUA ❯</button>
       <button class="btn-action muted" style="color:#e74c3c" onclick="finishQuiz()">Kết thúc</button>
-    </div>
-
-    <!-- Exam question grid -->
-    <div id="exam-q-grid" style="display:none;padding:8px 16px 4px;flex-shrink:0;">
-      <div id="q-grid-cells" style="display:grid;grid-template-columns:repeat(10,minmax(0,36px));gap:5px;justify-content:center;"></div>
     </div>
 
     <div class="scroll-body" style="padding-top:0">
