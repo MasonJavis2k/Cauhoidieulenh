@@ -1400,10 +1400,10 @@ function renderQuestion() {
   selectedIdx = null;
   isAnswered  = false;
 
-  const done = (quizMode === 'all' || quizMode === 'tt113') ? currentIndex : totalCount - quizQueue.length;
-  const pct  = totalCount > 0 ? (done / totalCount * 100) : 0;
+  const answered = currentIndex; // số câu đã trả lời
+  const pct  = totalCount > 0 ? (answered / totalCount * 100) : 0;
   document.getElementById('prog-fill').style.width = pct + '%';
-  document.getElementById('q-counter').textContent = `Câu ${done + 1} / ${totalCount}`;
+  document.getElementById('q-counter').textContent = `Đã làm ${answered} / ${totalCount} — Còn lại ${quizQueue.length}`;
   document.getElementById('feedback-bar').textContent = '';
   document.getElementById('feedback-bar').style.color = '';
   document.getElementById('question-text').textContent = q[0];
@@ -1570,15 +1570,19 @@ function prevQuestion() {
 
 function nextNoSave() {
   if (!quizQueue.length) return;
-  const q = quizQueue.shift();
-  if (!isAnswered) {
-    // Chưa trả lời → bỏ qua, đưa xuống cuối
+
+  if (isAnswered) {
+    // Đã trả lời → chuyển sang câu tiếp, xóa câu này khỏi queue
+    quizQueue.shift();
+    currentIndex++;
+    if (!quizQueue.length) { finishQuiz(); return; }
+  } else {
+    // Chưa trả lời → bỏ qua tạm, đưa xuống cuối queue, KHÔNG tăng currentIndex
+    const q = quizQueue.shift();
     quizQueue.push(q);
-  }
-  currentIndex++;
-  if (currentIndex >= totalCount) {
-    finishQuiz();
-    return;
+    if (quizMode === 'tt113') {
+      showToast(`⏭ Bỏ qua — còn ${quizQueue.length} câu (${currentIndex} đã làm)`);
+    }
   }
   renderQuestion();
 }
