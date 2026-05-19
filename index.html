@@ -809,11 +809,6 @@ mark.hl { background: rgba(240,165,0,0.3); color: var(--gold2); border-radius: 3
           <span class="btn-label">XEM TẤT CẢ CÂU HỎI & ĐÁP ÁN<br><small style="font-weight:400;opacity:0.8">Tra cứu · Tìm kiếm · Xem chi tiết</small></span>
           <span class="btn-arrow">›</span>
         </button>
-        <button class="btn-main btn-admin" onclick="openAdminPin()">
-          <span class="btn-icon-big">⚙️</span>
-          <span class="btn-label">QUẢN LÝ CÂU HỎI</span>
-          <span class="btn-arrow">›</span>
-        </button>
         <button class="btn-main btn-update" id="update-btn" onclick="updateQuestions()">
           <span class="btn-icon-big">🔄</span>
           <span class="btn-label">CẬP NHẬT CÂU HỎI<br><small id="update-sub" style="font-weight:400;opacity:0.8">tải câu hỏi</small></span>
@@ -821,7 +816,7 @@ mark.hl { background: rgba(240,165,0,0.3); color: var(--gold2); border-radius: 3
         </button>
         <button class="btn-main btn-settings" onclick="openSettings()">
           <span class="btn-icon-big">🗂️</span>
-          <span class="btn-label">CÀI ĐẶT CƠ CẤU ĐỀ (40% Nội vụ, 20% Đội ngũ & Nghi lễ, 40% Xử lý vi phạm)</span>
+          <span class="btn-label" id="settings-btn-label">CÀI ĐẶT CƠ CẤU ĐỀ<br><small style="font-weight:400;opacity:0.8">40% Nội vụ · 20% Đội ngũ · 40% Xử lý</small></span>
           <span class="btn-arrow">›</span>
         </button>
       </div>
@@ -1021,7 +1016,17 @@ mark.hl { background: rgba(240,165,0,0.3); color: var(--gold2); border-radius: 3
           Tổng: <span id="total-pct" style="color:var(--gold)">100%</span> &nbsp;→&nbsp; <span id="total-display" style="color:var(--gold)">20</span> câu
         </div>
       </div>
-      <button class="mb-btn" style="background:linear-gradient(135deg,#1a6b3c,var(--green))" onclick="saveSettings()">💾 LƯU CÀI ĐẶT</button>
+      <button class="mb-btn" style="background:linear-gradient(135deg,#1a6b3c,var(--green))" onclick="saveSettings()">💾 LƯU & XUẤT FILE GITHUB</button>
+      <div style="margin-top:10px;font-size:11px;color:var(--grey);text-align:center;padding:0 16px;">
+        Sau khi lưu, bạn sẽ nhận được nội dung file <code style="color:var(--gold)">settings.json</code> để đăng lên GitHub — áp dụng ngay cho tất cả mọi người.
+      </div>
+
+      <!-- QUẢN LÝ CÂU HỎI -->
+      <button class="btn-main btn-admin" style="margin-top:14px;width:100%;border-radius:var(--radius)" onclick="gotoScreen('admin-screen')">
+        <span class="btn-icon-big">⚙️</span>
+        <span class="btn-label">QUẢN LÝ CÂU HỎI</span>
+        <span class="btn-arrow">›</span>
+      </button>
 
       <!-- NOTICE ADMIN -->
       <div class="settings-card" style="margin-top:14px;">
@@ -1162,9 +1167,10 @@ mark.hl { background: rgba(240,165,0,0.3); color: var(--gold2); border-radius: 3
 // ═══════════════════════════════════════════════════════════════
 //  CONSTANTS & CONFIG
 // ═══════════════════════════════════════════════════════════════
-const APP_VERSION = '2.8';
-const GITHUB_DATA_URL = 'https://raw.githubusercontent.com/MasonJavis2k/Cauhoidieulenh/main/data_quiz.json';
-const GITHUB_VER_URL  = 'https://raw.githubusercontent.com/MasonJavis2k/Cauhoidieulenh/refs/heads/main/version.txt';
+const APP_VERSION = '3.0';
+const GITHUB_DATA_URL     = 'https://raw.githubusercontent.com/MasonJavis2k/Cauhoidieulenh/main/data_quiz.json';
+const GITHUB_VER_URL      = 'https://raw.githubusercontent.com/MasonJavis2k/Cauhoidieulenh/refs/heads/main/version.txt';
+const GITHUB_SETTINGS_URL = 'https://raw.githubusercontent.com/MasonJavis2k/Cauhoidieulenh/main/settings.json';
 // ═══════════════════════════════════════════════════════════════
 
 // ═══════════════════════════════════════════════════════════════
@@ -1267,6 +1273,7 @@ function updateMenuUI() {
   document.getElementById('s-dn').value = topicCounts.doi_ngu;
   document.getElementById('s-xl').value = topicCounts.xu_ly;
   updateTotal();
+  if (typeof _updateSettingsLabel === 'function') _updateSettingsLabel();
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1861,6 +1868,30 @@ function updatePct() {
 
 function updateTotal() { updatePct(); }
 
+// Tải cài đặt cơ cấu đề từ GitHub (ghi đè localStorage nếu có)
+function loadRemoteSettings() {
+  fetch(GITHUB_SETTINGS_URL + '?t=' + Date.now())
+    .then(r => { if (!r.ok) throw new Error('no settings'); return r.json(); })
+    .then(data => {
+      if (data && typeof data.noi_vu === 'number' && typeof data.doi_ngu === 'number' && typeof data.xu_ly === 'number') {
+        topicCounts = { noi_vu: data.noi_vu, doi_ngu: data.doi_ngu, xu_ly: data.xu_ly };
+        // Lưu lại localStorage để dùng offline
+        try { localStorage.setItem('quiz_settings', JSON.stringify(topicCounts)); } catch(e) {}
+        updateMenuUI();
+        // Cập nhật label nút menu
+        _updateSettingsLabel();
+      }
+    })
+    .catch(() => {}); // im lặng nếu chưa có file hoặc lỗi mạng
+}
+
+function _updateSettingsLabel() {
+  const btn = document.querySelector('.btn-settings .btn-label');
+  if (btn) {
+    btn.innerHTML = `CÀI ĐẶT CƠ CẤU ĐỀ<br><small style="font-weight:400;opacity:0.8">${topicCounts.noi_vu}% Nội vụ · ${topicCounts.doi_ngu}% Đội ngũ · ${topicCounts.xu_ly}% Xử lý</small>`;
+  }
+}
+
 function saveSettings() {
   const pNv = parseInt(document.getElementById('s-nv').value) || 0;
   const pDn = parseInt(document.getElementById('s-dn').value) || 0;
@@ -1872,8 +1903,93 @@ function saveSettings() {
   }
   topicCounts = { noi_vu: pNv, doi_ngu: pDn, xu_ly: pXl };
   saveLocal();
+  _updateSettingsLabel();
   const counts = pctToCounts(pNv, pDn, pXl);
-  showToast('Đã lưu! NV:' + counts.noi_vu + ' · ĐN:' + counts.doi_ngu + ' · XL:' + counts.xu_ly + ' câu');
+  // Hiện popup hướng dẫn đăng lên GitHub
+  showSettingsExport(topicCounts, counts);
+}
+
+function showSettingsExport(tc, counts) {
+  const json = JSON.stringify(tc, null, 2);
+  // Tạo hoặc tái sử dụng popup export
+  let overlay = document.getElementById('settings-export-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'settings-export-overlay';
+    overlay.style.cssText = `
+      display:none; position:fixed; inset:0; z-index:1300;
+      background:rgba(13,27,42,0.96);
+      align-items:center; justify-content:center; padding:20px;
+      flex-direction:column; gap:0;
+    `;
+    document.body.appendChild(overlay);
+  }
+  overlay.innerHTML = `
+    <div style="
+      background:var(--card); border:1px solid var(--gold);
+      border-radius:18px; width:100%; max-width:440px;
+      padding:22px 20px 18px; box-shadow:0 8px 40px rgba(0,0,0,0.7);
+      display:flex; flex-direction:column; gap:14px;
+    ">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:22px;">📤</span>
+        <span style="font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--gold);letter-spacing:0.5px;">ĐÃ LƯU · ĐĂNG LÊN GITHUB</span>
+      </div>
+      <div style="font-size:13px;color:var(--light);line-height:1.7;">
+        Cơ cấu: <b style="color:var(--gold)">${tc.noi_vu}%</b> Nội vụ (${counts.noi_vu} câu) · 
+        <b style="color:var(--gold)">${tc.doi_ngu}%</b> Đội ngũ (${counts.doi_ngu} câu) · 
+        <b style="color:var(--gold)">${tc.xu_ly}%</b> Xử lý (${counts.xu_ly} câu)<br><br>
+        Để áp dụng cho <b style="color:var(--white)">tất cả mọi người</b>, hãy copy nội dung bên dưới và lưu thành file <code style="color:var(--gold);font-size:12px;">settings.json</code> trên GitHub repo:
+      </div>
+      <div style="position:relative;">
+        <pre id="settings-json-pre" style="
+          background:var(--navy); border:1px solid var(--border);
+          border-radius:10px; padding:14px; font-size:13px;
+          color:var(--green2); font-family:monospace;
+          white-space:pre; overflow-x:auto; margin:0;
+          user-select:all; -webkit-user-select:all;
+        ">${json}</pre>
+        <button onclick="copySettingsJson()" style="
+          position:absolute; top:8px; right:8px;
+          background:var(--gold); border:none; border-radius:6px;
+          font-size:11px; font-weight:700; color:var(--navy);
+          padding:5px 10px; cursor:pointer;
+        " id="copy-settings-btn">📋 Copy</button>
+      </div>
+      <div style="font-size:11px;color:var(--grey);line-height:1.6;">
+        📌 Đường dẫn file: <code style="color:var(--gold)">settings.json</code> (cùng thư mục với data_quiz.json)<br>
+        Sau khi đăng lên GitHub, tất cả người dùng sẽ tải cơ cấu mới khi mở app.
+      </div>
+      <button onclick="document.getElementById('settings-export-overlay').style.display='none';" style="
+        background:linear-gradient(135deg,#1a6b3c,var(--green));
+        border:none; border-radius:10px; padding:13px;
+        font-family:var(--font-main); font-size:14px; font-weight:700;
+        color:var(--white); cursor:pointer; width:100%;
+        -webkit-tap-highlight-color:transparent;
+      ">✓ Đã hiểu, đóng</button>
+    </div>
+  `;
+  overlay.style.display = 'flex';
+}
+
+function copySettingsJson() {
+  const pre = document.getElementById('settings-json-pre');
+  const btn = document.getElementById('copy-settings-btn');
+  if (!pre) return;
+  try {
+    navigator.clipboard.writeText(pre.textContent).then(() => {
+      btn.textContent = '✅ Đã copy!';
+      setTimeout(() => { btn.textContent = '📋 Copy'; }, 2000);
+    });
+  } catch(e) {
+    // fallback
+    const sel = window.getSelection();
+    const range = document.createRange();
+    range.selectNodeContents(pre);
+    sel.removeAllRanges();
+    sel.addRange(range);
+    showToast('Hãy nhấn giữ và chọn Copy!');
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -2044,6 +2160,8 @@ function showToast(msg) {
 window.addEventListener('load', () => {
   loadLocal();
   updateMenuUI();
+  // Tải cài đặt cơ cấu đề từ GitHub (áp dụng cho tất cả)
+  loadRemoteSettings();
   // Kiểm tra update ngầm
   setTimeout(checkRemoteVersion, 2000);
   // Hiện thông báo nếu được bật
