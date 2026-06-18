@@ -776,6 +776,41 @@ mark.hl { background: rgba(240,165,0,0.3); color: var(--gold2); border-radius: 3
 </style>
 </head>
 <body>
+<!-- ===== LỚP CHẶN MẬT KHẨU (GIẢ 404) ===== -->
+<div id="gate404" style="position:fixed;inset:0;z-index:2147483647;background:#fff;color:#24292f;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;">
+  <div style="max-width:500px;">
+    <p style="font-size:80px;font-weight:300;margin:0;line-height:1;">404</p>
+    <h1 style="font-size:23px;font-weight:600;margin:14px 0 8px;">This is not the web page you are looking for.</h1>
+    <p style="color:#57606a;margin-bottom:28px;font-size:15px;">The site configured at this address does not contain the requested file.</p>
+    <input id="gatePass" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+      style="position:fixed;inset:0;width:100%;height:100%;border:0;background:transparent;color:transparent;caret-color:transparent;outline:none;text-align:center;font-size:16px;cursor:default;"
+      onkeydown="if(event.key==='Enter')gateCheck();">
+  </div>
+</div>
+<script>
+  // ====== ĐỔI MẬT KHẨU TẠI ĐÂY ======
+  var GATE_PASSWORD = "matkhau123";
+  // ===================================
+  (function(){
+    if (sessionStorage.getItem("gateOK") === "1") {
+      var g = document.getElementById("gate404");
+      if (g) g.style.display = "none";
+    } else {
+      var inp = document.getElementById("gatePass");
+      if (inp) setTimeout(function(){ inp.focus(); }, 100);
+    }
+  })();
+  function gateCheck(){
+    var v = document.getElementById("gatePass").value;
+    if (v === GATE_PASSWORD){
+      sessionStorage.setItem("gateOK","1");
+      document.getElementById("gate404").style.display = "none";
+    } else {
+      document.getElementById("gatePass").value = "";
+    }
+  }
+</script>
+<!-- ===== HẾT LỚP CHẶN ===== -->
 <div id="app">
 
   <!-- ══════════ MENU ══════════ -->
