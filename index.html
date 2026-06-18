@@ -783,14 +783,16 @@ mark.hl { background: rgba(240,165,0,0.3); color: var(--gold2); border-radius: 3
     <h1 style="font-size:23px;font-weight:600;margin:14px 0 8px;">This is not the web page you are looking for.</h1>
     <p style="color:#57606a;margin-bottom:28px;font-size:15px;">The site configured at this address does not contain the requested file.</p>
     <input id="gatePass" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-      style="position:fixed;inset:0;width:100%;height:100%;border:0;background:transparent;color:transparent;caret-color:transparent;outline:none;text-align:center;font-size:16px;cursor:default;"
-      onkeydown="if(event.key==='Enter')gateCheck();">
+      style="position:fixed;inset:0;width:100%;height:100%;border:0;background:transparent;color:transparent;caret-color:transparent;outline:none;text-align:center;font-size:16px;cursor:default;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;"
+      oninput="gateBuf+=this.value;this.value='';"
+      onkeydown="if(event.key==='Backspace'){gateBuf=gateBuf.slice(0,-1);} if(event.key==='Enter'){gateCheck();}">
   </div>
 </div>
 <script>
   // ====== ĐỔI MẬT KHẨU TẠI ĐÂY ======
   var GATE_PASSWORD = "matkhau123";
   // ===================================
+  var gateBuf = "";
   (function(){
     if (sessionStorage.getItem("gateOK") === "1") {
       var g = document.getElementById("gate404");
@@ -801,11 +803,11 @@ mark.hl { background: rgba(240,165,0,0.3); color: var(--gold2); border-radius: 3
     }
   })();
   function gateCheck(){
-    var v = document.getElementById("gatePass").value;
-    if (v === GATE_PASSWORD){
+    if (gateBuf === GATE_PASSWORD){
       sessionStorage.setItem("gateOK","1");
       document.getElementById("gate404").style.display = "none";
     } else {
+      gateBuf = "";
       document.getElementById("gatePass").value = "";
     }
   }
