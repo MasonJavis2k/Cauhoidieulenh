@@ -751,7 +751,6 @@ mark.hl { background: rgba(240,165,0,0.3); color: var(--gold2); border-radius: 3
   background: rgba(52,152,219,0.12);
 }
 
-#pin-overlay.show { display:flex !important; }
 .pin-dot {
   width:14px; height:14px; border-radius:50%;
   border:2px solid var(--grey);
@@ -817,9 +816,7 @@ mark.hl { background: rgba(240,165,0,0.3); color: var(--gold2); border-radius: 3
   <div class="screen active" id="menu-screen">
     <div class="scroll-body" style="padding-top:0">
       <div class="menu-hero">
-        <div class="menu-badge">Tỉnh Thái Nguyên</div>
         <div class="menu-title">Câu hỏi<br>Điều lệnh 2026</div>
-        <div class="menu-sub">Đội CNTT — Chúc các đồng chí đạt điểm cao phần thi Lý Thuyết</div>
       </div>
 
       <div class="menu-buttons">
@@ -849,7 +846,7 @@ mark.hl { background: rgba(240,165,0,0.3); color: var(--gold2); border-radius: 3
           <span class="btn-label">CẬP NHẬT CÂU HỎI<br><small id="update-sub" style="font-weight:400;opacity:0.8">tải câu hỏi</small></span>
           <span class="btn-arrow">›</span>
         </button>
-        <button class="btn-main btn-settings" onclick="openSettings()">
+        <button class="btn-main btn-settings" onclick="gotoScreen('settings-screen')">
           <span class="btn-icon-big">🗂️</span>
           <span class="btn-label" id="settings-btn-label">CÀI ĐẶT CƠ CẤU ĐỀ<br><small style="font-weight:400;opacity:0.8">40% Nội vụ · 20% Đội ngũ · 40% Xử lý</small></span>
           <span class="btn-arrow">›</span>
@@ -1073,99 +1070,6 @@ mark.hl { background: rgba(240,165,0,0.3); color: var(--gold2); border-radius: 3
 
 
   <!-- ══════════ TT113 HINT POPUP ══════════ -->
-  <!-- ══════════ NOTICE POPUP ══════════ -->
-  <div id="notice-popup" style="
-    display:none; position:fixed; inset:0; z-index:1100;
-    background:rgba(13,27,42,0.92);
-    align-items:center; justify-content:center; padding:20px;
-  ">
-    <div style="
-      background:var(--card); border:1px solid var(--gold);
-      border-radius:18px; width:100%; max-width:420px;
-      padding:24px 20px 18px; box-shadow:0 8px 40px rgba(0,0,0,0.6);
-      display:flex; flex-direction:column; gap:14px;
-    ">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <span style="font-size:22px;">📢</span>
-        <span style="font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--gold);letter-spacing:0.5px;">THÔNG BÁO</span>
-      </div>
-      <div id="notice-body" style="
-        font-size:14px; line-height:1.85; color:var(--light);
-        white-space:pre-wrap; word-break:break-word;
-        max-height:55vh; overflow-y:auto;
-      "></div>
-      <button onclick="closeNotice()" style="
-        background:linear-gradient(135deg,var(--gold),var(--gold2));
-        border:none; border-radius:10px; padding:13px;
-        font-family:var(--font-main); font-size:14px; font-weight:700;
-        color:var(--navy); cursor:pointer; width:100%;
-        -webkit-tap-highlight-color:transparent;
-      ">✓ Đã hiểu, đóng thông báo</button>
-    </div>
-  </div>
-
-
-
-  <!-- ══════════ PIN OVERLAY (SETTINGS) ══════════ -->
-  <div id="pin-overlay" style="
-    display:none; position:fixed; inset:0; z-index:999;
-    background:rgba(13,27,42,0.97);
-    flex-direction:column; align-items:center; justify-content:center; gap:20px;
-  ">
-    <div id="pin-title" style="font-family:var(--font-display);font-size:18px;font-weight:700;color:var(--gold);letter-spacing:1px;">🔒 NHẬP MẬT KHẨU</div>
-    <div id="pin-subtitle" style="font-size:13px;color:var(--grey);">Cài đặt cơ cấu đề thi</div>
-    <div id="pin-dots" style="display:flex;gap:14px;margin:4px 0;">
-      <span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span>
-      <span class="pin-dot"></span><span class="pin-dot"></span><span class="pin-dot"></span>
-    </div>
-    <div id="pin-error" style="font-size:12px;color:#e74c3c;min-height:18px;"></div>
-    <div style="display:grid;grid-template-columns:repeat(3,72px);gap:10px;">
-      <button class="pin-key" onclick="pinPress('1')">1</button>
-      <button class="pin-key" onclick="pinPress('2')">2</button>
-      <button class="pin-key" onclick="pinPress('3')">3</button>
-      <button class="pin-key" onclick="pinPress('4')">4</button>
-      <button class="pin-key" onclick="pinPress('5')">5</button>
-      <button class="pin-key" onclick="pinPress('6')">6</button>
-      <button class="pin-key" onclick="pinPress('7')">7</button>
-      <button class="pin-key" onclick="pinPress('8')">8</button>
-      <button class="pin-key" onclick="pinPress('9')">9</button>
-      <button class="pin-key pin-cancel" onclick="pinCancel()">✕</button>
-      <button class="pin-key" onclick="pinPress('0')">0</button>
-      <button class="pin-key pin-del" onclick="pinDel()">⌫</button>
-    </div>
-  </div>
-  <!-- ══════════ EXAM CONFIRM DIALOG ══════════ -->
-  <div id="exam-confirm-overlay" style="
-    display:none; position:fixed; inset:0; z-index:1200;
-    background:rgba(13,27,42,0.92);
-    align-items:center; justify-content:center; padding:24px;
-  ">
-    <div style="
-      background:var(--card); border:1px solid var(--border);
-      border-radius:18px; width:100%; max-width:380px;
-      padding:24px 20px 18px; display:flex; flex-direction:column; gap:16px;
-    ">
-      <div style="font-size:18px; text-align:center;">📝</div>
-      <div id="exam-confirm-msg" style="
-        font-size:14px; line-height:1.7; color:var(--light);
-        text-align:center; white-space:pre-line;
-      "></div>
-      <div style="display:flex; gap:10px; margin-top:4px;">
-        <button id="exam-confirm-cancel" style="
-          flex:1; padding:13px; border:1px solid var(--border);
-          border-radius:10px; background:var(--navy2);
-          font-family:var(--font-main); font-size:14px; font-weight:700;
-          color:var(--grey); cursor:pointer;
-        ">Huỷ</button>
-        <button id="exam-confirm-ok" style="
-          flex:1; padding:13px; border:none;
-          border-radius:10px; background:linear-gradient(135deg,#922b21,var(--red));
-          font-family:var(--font-main); font-size:14px; font-weight:700;
-          color:var(--white); cursor:pointer;
-        ">Nộp bài</button>
-      </div>
-    </div>
-  </div>
 </div><!-- #app -->
 
 <!-- Detail Popup -->
@@ -1842,22 +1746,6 @@ function resetForm() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-const GITHUB_NOTICE_URL = './notice.txt';
-
-function closeNotice() {
-  document.getElementById('notice-popup').style.display = 'none';
-}
-
-function checkAndShowNotice() {
-  fetch(GITHUB_NOTICE_URL + '?t=' + Date.now())
-    .then(r => { if (!r.ok) throw new Error(); return r.text(); })
-    .then(text => {
-      if (!text.trim()) return;
-      document.getElementById('notice-body').textContent = text.trim();
-      document.getElementById('notice-popup').style.display = 'flex';
-    })
-    .catch(() => {}); // im lặng nếu lỗi mạng
-}
 
 // ═══════════════════════════════════════════════════════════════
 //  SETTINGS
@@ -2204,7 +2092,6 @@ window.addEventListener('load', () => {
   // Kiểm tra update ngầm
   setTimeout(checkRemoteVersion, 2000);
   // Hiện thông báo nếu được bật
-  setTimeout(checkAndShowNotice, 800);
 
   // Nếu chưa có câu hỏi, tự động tải
   if (!allQuestions.length) {
@@ -2228,78 +2115,3 @@ window.addEventListener('load', () => {
       });
   }
 });
-
-// ═══════════════════════════════════════════════════════════════
-//  PIN / PASSWORD GATE
-// ═══════════════════════════════════════════════════════════════
-const SETTINGS_PIN = '209200'; // ← đổi mật khẩu tại đây
-let pinBuffer = '';
-let pinTarget = 'settings-screen'; // 'settings-screen' | 'admin-screen'
-
-function openSettings() {
-  pinTarget = 'settings-screen';
-  pinBuffer = '';
-  updatePinDots();
-  document.getElementById('pin-title').textContent  = '🔒 NHẬP MẬT KHẨU';
-  document.getElementById('pin-subtitle').textContent = 'Cài đặt cơ cấu đề thi';
-  document.getElementById('pin-error').textContent = '';
-  document.getElementById('pin-overlay').classList.add('show');
-}
-
-function openAdminPin() {
-  pinTarget = 'admin-screen';
-  pinBuffer = '';
-  updatePinDots();
-  document.getElementById('pin-title').textContent  = '🔒 NHẬP MẬT KHẨU';
-  document.getElementById('pin-subtitle').textContent = 'Quản lý câu hỏi';
-  document.getElementById('pin-error').textContent = '';
-  document.getElementById('pin-overlay').classList.add('show');
-}
-
-function pinCancel() {
-  pinBuffer = '';
-  document.getElementById('pin-overlay').classList.remove('show');
-}
-
-function pinDel() {
-  pinBuffer = pinBuffer.slice(0, -1);
-  updatePinDots();
-}
-
-function pinPress(digit) {
-  if (pinBuffer.length >= 6) return;
-  pinBuffer += digit;
-  updatePinDots();
-  if (pinBuffer.length === 6) {
-    setTimeout(pinCheck, 120);
-  }
-}
-
-function pinCheck() {
-  if (pinBuffer === SETTINGS_PIN) {
-    document.getElementById('pin-overlay').classList.remove('show');
-    gotoScreen(pinTarget);
-  } else {
-    // shake & error
-    const dots = document.querySelectorAll('.pin-dot');
-    dots.forEach(d => d.classList.add('error'));
-    document.getElementById('pin-error').textContent = 'Sai mật khẩu! Thử lại.';
-    setTimeout(() => {
-      dots.forEach(d => { d.classList.remove('error','filled'); });
-      document.getElementById('pin-error').textContent = '';
-      pinBuffer = '';
-    }, 900);
-  }
-}
-
-function updatePinDots() {
-  const dots = document.querySelectorAll('.pin-dot');
-  dots.forEach((d, i) => {
-    d.classList.toggle('filled', i < pinBuffer.length);
-    d.classList.remove('error');
-  });
-}
-
-</script>
-</body>
-</html>
