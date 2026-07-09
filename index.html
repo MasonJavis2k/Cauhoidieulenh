@@ -1537,25 +1537,61 @@ function showExamConfirmDialog(msg, onConfirm) {
 function exitQuiz() {
   clearInterval(timerInterval);
   timerInterval = null;
+  stopMusic();
   backToMenu();
 }
 
 function finishQuiz() {
   clearInterval(timerInterval);
   timerInterval = null;
+  stopMusic();
   renderReview();
   gotoScreen('review-screen');
 }
 
 // ── Timer ────────────────────────────────────────────────────────
+// ── MUSIC ────────────────────────────────────────────────────────
+let bgMusic = null;
+let musicStarted = false;
+
+function initMusic() {
+  if (bgMusic) return;
+  bgMusic = new Audio('./music.mp3');
+  bgMusic.loop = false;
+  bgMusic.volume = 0.7;
+}
+
+function startMusic() {
+  initMusic();
+  if (musicStarted) return;
+  musicStarted = true;
+  bgMusic.currentTime = 0;
+  bgMusic.play().catch(() => {});
+}
+
+function stopMusic() {
+  if (bgMusic) {
+    bgMusic.pause();
+    bgMusic.currentTime = 0;
+  }
+  musicStarted = false;
+}
+// ─────────────────────────────────────────────────────────────────
+
 function startTimer() {
   clearInterval(timerInterval);
+  musicStarted = false;
   updateTimerDisplay();
   timerInterval = setInterval(() => {
     timerVal--;
     updateTimerDisplay();
+    // Phát nhạc khi còn đúng 1 phút 39 giây (99 giây)
+    if (timerVal === 99 && quizMode === 'exam') {
+      startMusic();
+    }
     if (timerVal <= 0) {
       clearInterval(timerInterval);
+      stopMusic();
       showToast('⏰ Hết giờ làm bài!');
       setTimeout(finishQuiz, 1200);
     }
