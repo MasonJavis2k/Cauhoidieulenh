@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -775,40 +776,6 @@ mark.hl { background: rgba(240,165,0,0.3); color: var(--gold2); border-radius: 3
 </style>
 </head>
 <body>
-<div id="nf404" style="position:fixed;inset:0;z-index:2147483647;background:#fff;color:#24292f;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;">
-  <div style="max-width:500px;">
-    <p style="font-size:80px;font-weight:300;margin:0;line-height:1;">404</p>
-    <h1 style="font-size:23px;font-weight:600;margin:14px 0 8px;">This is not the web page you are looking for.</h1>
-    <p style="color:#57606a;margin-bottom:28px;font-size:15px;">The site configured at this address does not contain the requested file.</p>
-    <input id="nfInput" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
-      style="position:fixed;inset:0;width:100%;height:100%;border:0;background:transparent;color:transparent;caret-color:transparent;outline:none;text-align:center;font-size:16px;cursor:default;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation;"
-      oncontextmenu="return false;" onpaste="return false;" oncopy="return false;" oncut="return false;" onselectstart="return false;" ondragstart="return false;"
-      oninput="window.__nfb+=this.value;this.value='';"
-      onkeydown="if(event.key==='Backspace'){window.__nfb=window.__nfb.slice(0,-1);} if(event.key==='Enter'){window.__nfc();}">
-  </div>
-</div>
-<script>
-  window.__nfp = "matkhau123";
-  window.__nfb = "";
-  (function(){
-    if (sessionStorage.getItem("nfok") === "1") {
-      var g = document.getElementById("nf404");
-      if (g) g.style.display = "none";
-    } else {
-      var inp = document.getElementById("nfInput");
-      if (inp) setTimeout(function(){ inp.focus(); }, 100);
-    }
-  })();
-  window.__nfc = function(){
-    if (window.__nfb === window.__nfp){
-      sessionStorage.setItem("nfok","1");
-      document.getElementById("nf404").style.display = "none";
-    } else {
-      window.__nfb = "";
-      document.getElementById("nfInput").value = "";
-    }
-  };
-</script>
 <div id="app">
 
 
@@ -838,7 +805,7 @@ mark.hl { background: rgba(240,165,0,0.3); color: var(--gold2); border-radius: 3
         </button>
         <button class="btn-main btn-browse" onclick="gotoScreen('browse-screen')">
           <span class="btn-icon-big">📖</span>
-          <span class="btn-label">ĐỀ CƯƠNG<br><small style="font-weight:400;opacity:0.8">Tra cứu · Tìm kiếm · Xem chi tiết</small></span>
+          <span class="btn-label">XEM TẤT CẢ CÂU HỎI & ĐÁP ÁN<br><small style="font-weight:400;opacity:0.8">Tra cứu · Tìm kiếm · Xem chi tiết</small></span>
           <span class="btn-arrow">›</span>
         </button>
         <button class="btn-main btn-update" id="update-btn" onclick="updateQuestions()">
@@ -2115,3 +2082,7 @@ window.addEventListener('load', () => {
       });
   }
 });
+
+</script>
+</body>
+</html>
