@@ -1036,6 +1036,42 @@ mark.hl { background: rgba(240,165,0,0.3); color: var(--gold2); border-radius: 3
 
 
   <!-- ══════════ TT113 HINT POPUP ══════════ -->
+
+  <!-- ══════════ EXAM CONFIRM DIALOG ══════════ -->
+  <div id="exam-confirm-overlay" style="
+    display:none; position:fixed; inset:0; z-index:1400;
+    background:rgba(0,0,0,0.75);
+    align-items:center; justify-content:center; padding:24px;
+  ">
+    <div style="
+      background:var(--card); border:1px solid var(--gold);
+      border-radius:18px; width:100%; max-width:380px;
+      padding:24px 20px; display:flex; flex-direction:column; gap:16px;
+      box-shadow:0 8px 40px rgba(0,0,0,0.7);
+    ">
+      <div style="font-size:20px;text-align:center;">📝</div>
+      <div id="exam-confirm-msg" style="
+        font-size:14px; color:var(--light); line-height:1.7;
+        text-align:center; white-space:pre-line;
+      "></div>
+      <div style="display:flex;gap:10px;">
+        <button id="exam-confirm-cancel" style="
+          flex:1; padding:13px; border:1px solid var(--border);
+          border-radius:12px; background:var(--navy2);
+          font-family:var(--font-main); font-size:14px; font-weight:700;
+          color:var(--grey); cursor:pointer;
+          -webkit-tap-highlight-color:transparent;
+        ">Chưa, làm tiếp</button>
+        <button id="exam-confirm-ok" style="
+          flex:1; padding:13px; border:none;
+          border-radius:12px; background:linear-gradient(135deg,#922b21,var(--red));
+          font-family:var(--font-main); font-size:14px; font-weight:700;
+          color:var(--white); cursor:pointer;
+          -webkit-tap-highlight-color:transparent;
+        ">✅ Nộp bài</button>
+      </div>
+    </div>
+  </div>
 </div><!-- #app -->
 
 <!-- Detail Popup -->
@@ -1072,7 +1108,7 @@ mark.hl { background: rgba(240,165,0,0.3); color: var(--gold2); border-radius: 3
 // ═══════════════════════════════════════════════════════════════
 //  CONSTANTS & CONFIG
 // ═══════════════════════════════════════════════════════════════
-const APP_VERSION = '3.1';
+const APP_VERSION = '3.0';
 const GITHUB_DATA_URL     = './data_quiz.json';
 const GITHUB_VER_URL      = './version.txt';
 const GITHUB_SETTINGS_URL = './settings.json';
@@ -1537,63 +1573,29 @@ function showExamConfirmDialog(msg, onConfirm) {
 function exitQuiz() {
   clearInterval(timerInterval);
   timerInterval = null;
-  stopMusic();
   backToMenu();
 }
 
 function finishQuiz() {
   clearInterval(timerInterval);
   timerInterval = null;
-  stopMusic();
   renderReview();
   gotoScreen('review-screen');
 }
 
 // ── Timer ────────────────────────────────────────────────────────
-// ── MUSIC ────────────────────────────────────────────────────────
-let bgMusic = null;
-let musicStarted = false;
-
-function initMusic() {
-  if (bgMusic) return;
-  bgMusic = new Audio('./music.mp3');
-  bgMusic.loop = false;
-  bgMusic.volume = 0.7;
-}
-
-function startMusic() {
-  initMusic();
-  if (musicStarted) return;
-  musicStarted = true;
-  bgMusic.currentTime = 0;
-  bgMusic.play().catch(() => {});
-}
-
-function stopMusic() {
-  if (bgMusic) {
-    bgMusic.pause();
-    bgMusic.currentTime = 0;
-  }
-  musicStarted = false;
-}
-// ─────────────────────────────────────────────────────────────────
-
 function startTimer() {
   clearInterval(timerInterval);
-  musicStarted = false;
   updateTimerDisplay();
   timerInterval = setInterval(() => {
     timerVal--;
     updateTimerDisplay();
-    // Phát nhạc khi còn đúng 1 phút 39 giây (99 giây)
-    if (timerVal === 99 && quizMode === 'exam') {
-      startMusic();
-    }
     if (timerVal <= 0) {
       clearInterval(timerInterval);
+      timerInterval = null;
       stopMusic();
       showToast('⏰ Hết giờ làm bài!');
-      setTimeout(finishQuiz, 1200);
+      setTimeout(doFinishExam, 1200);
     }
   }, 1000);
 }
