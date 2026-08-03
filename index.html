@@ -2207,7 +2207,7 @@ function hardLockTryUnlock() {
 // ═══════════════════════════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════════════════════════
-const HARD_LOCK_ENABLED = true; // đổi thành false để tắt khóa cứng
+const HARD_LOCK_ENABLED = false; // đổi thành false để tắt khóa cứng
 window.addEventListener('load', () => {
   if (HARD_LOCK_ENABLED) showHardLock();
   loadLocal();
