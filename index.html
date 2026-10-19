@@ -1117,9 +1117,9 @@ mark.hl { background: rgba(240,165,0,0.3); color: var(--gold2); border-radius: 3
 // ═══════════════════════════════════════════════════════════════
 //  CONSTANTS & CONFIG
 // ═══════════════════════════════════════════════════════════════
-const APP_VERSION = '3.3';
-const GITHUB_DATA_URL     = './data_quiz.json';
-const GITHUB_VER_URL      = './version.txt';
+const APP_VERSION = '3.5';
+const GITHUB_DATA_URL = 'https://raw.githubusercontent.com/MasonJavis2k/Cauhoidieulenh/main/data_quiz.json';
+const GITHUB_VER_URL = 'https://raw.githubusercontent.com/MasonJavis2k/Cauhoidieulenh/main/version.txt';
 // ═══════════════════════════════════════════════════════════════
 
 // ═══════════════════════════════════════════════════════════════
@@ -1161,13 +1161,33 @@ function loadLocal() {
     if (raw) {
       const parsed = JSON.parse(raw);
       if (parsed && parsed.questions) {
-        allQuestions = parsed.questions;
+        allQuestions = prepareQuestions(parsed);
         dataVersion  = parsed.version || 'N/A';
       } else if (Array.isArray(parsed)) {
-        allQuestions = parsed;
+        allQuestions = prepareQuestions(parsed);
       }
     }
   } catch(e) {}
+}
+
+function hasExamQuestions(questions) {
+  if (!Array.isArray(questions)) return false;
+  return ['noi_vu', 'doi_ngu', 'nghi_le'].every(topic =>
+    questions.filter(q => q[5] === topic).length >= 5
+  );
+}
+
+function prepareQuestions(data) {
+  const source = Array.isArray(data) ? data : data.questions;
+  if (!Array.isArray(source)) throw new Error('invalid-data');
+  const questions = source.map(q => [...q]);
+  // GitHub v1.9 stores ceremonial questions under doi_ngu (one has no category).
+  if (!questions.some(q => q[5] === 'nghi_le') &&
+      questions[118]?.[0]?.startsWith('Khi chào cờ Tổ quốc ngoài trời') &&
+      questions[139]?.[0]?.startsWith('Đồng chí cho biết thứ tự đeo Huân chương')) {
+    for (let i = 118; i <= 139; i++) questions[i][5] = 'nghi_le';
+  }
+  return questions;
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1218,14 +1238,12 @@ function updateQuestions() {
   showLoading('Đang kết nối GitHub...');
   const cb = '?t=' + Date.now();
   fetch(GITHUB_DATA_URL + cb)
-    .then(r => r.json())
+    .then(r => { if (!r.ok) throw new Error('network'); return r.json(); })
     .then(data => {
-      if (data && data.questions) {
-        allQuestions = data.questions;
-        dataVersion  = data.version || '1.0';
-      } else if (Array.isArray(data)) {
-        allQuestions = data;
-      }
+      const questions = prepareQuestions(data);
+      if (!hasExamQuestions(questions)) throw new Error('old-data');
+      allQuestions = questions;
+      dataVersion = data.version || '1.0';
       saveLocal();
       hideLoading();
       updateMenuUI();
@@ -1234,7 +1252,9 @@ function updateQuestions() {
     })
     .catch(e => {
       hideLoading();
-      showToast('❌ Không tải được — kiểm tra kết nối mạng');
+      showToast(e.message === 'old-data'
+        ? 'Dữ liệu GitHub chưa đủ 3 nhóm câu hỏi.'
+        : '❌ Không tải được câu hỏi từ GitHub. Kiểm tra mạng.');
     });
 }
 
@@ -2001,31 +2021,11 @@ window.addEventListener('load', () => {
   if (HARD_LOCK_ENABLED) showHardLock();
   loadLocal();
   updateMenuUI();
+  updateQuestions();
   // Kiểm tra update ngầm
   setTimeout(checkRemoteVersion, 2000);
   // Hiện thông báo nếu được bật
 
-  // Nếu chưa có câu hỏi, tự động tải
-  if (!allQuestions.length || !allQuestions.some(q => q[5] === 'nghi_le')) {
-    showLoading('Đang tải câu hỏi lần đầu...');
-    const cb = '?t=' + Date.now();
-    fetch(GITHUB_DATA_URL + cb)
-      .then(r => r.json())
-      .then(data => {
-        if (data && data.questions) {
-          allQuestions = data.questions;
-          dataVersion  = data.version || '1.0';
-        } else if (Array.isArray(data)) {
-          allQuestions = data;
-        }
-        saveLocal(); hideLoading(); updateMenuUI();
-        showToast('✅ Tải xong ' + allQuestions.length + ' câu hỏi!');
-      })
-      .catch(() => {
-        hideLoading();
-        showToast('⚠️ Không tải được câu hỏi. Kiểm tra mạng rồi nhấn Cập nhật.');
-      });
-  }
 });
 
 </script>
