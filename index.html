@@ -850,7 +850,7 @@ mark.hl { background: rgba(240,165,0,0.3); color: var(--gold2); border-radius: 3
       <div class="menu-buttons">
         <button class="btn-main btn-exam" onclick="startQuiz('exam')">
           <span class="btn-icon-big">🔥</span>
-          <span class="btn-label">THI THỬ<br><small style="font-weight:400;opacity:0.8">20 câu · 6 phút</small></span>
+          <span class="btn-label">THI THỬ<br><small style="font-weight:400;opacity:0.8">15 câu · 15 phút · 5 Nội vụ / 5 Đội ngũ / 5 Nghi lễ</small></span>
           <span class="btn-arrow">›</span>
         </button>
         <button class="btn-main btn-tt113" onclick="startQuiz('tt113')">
@@ -876,7 +876,7 @@ mark.hl { background: rgba(240,165,0,0.3); color: var(--gold2); border-radius: 3
         </button>
         <button class="btn-main btn-settings" onclick="gotoScreen('settings-screen')">
           <span class="btn-icon-big">🗂️</span>
-          <span class="btn-label" id="settings-btn-label">CÀI ĐẶT CƠ CẤU ĐỀ<br><small style="font-weight:400;opacity:0.8">40% Nội vụ · 20% Đội ngũ · 40% Xử lý</small></span>
+          <span class="btn-label" id="settings-btn-label">THÔNG TIN ĐỀ THI<br><small style="font-weight:400;opacity:0.8">5 Nội vụ · 5 Đội ngũ · 5 Nghi lễ</small></span>
           <span class="btn-arrow">›</span>
         </button>
       </div>
@@ -896,7 +896,7 @@ mark.hl { background: rgba(240,165,0,0.3); color: var(--gold2); border-radius: 3
     <div class="topbar">
       <button class="btn-icon" onclick="exitQuiz()">✕</button>
       <span class="topbar-title" id="quiz-title">Thi thử</span>
-      <span id="timer-display" style="font-size:16px;font-weight:700;color:var(--gold2)">06:00</span>
+      <span id="timer-display" style="font-size:16px;font-weight:700;color:var(--gold2)">15:00</span>
     </div>
 
     <div class="quiz-progress-bar">
@@ -974,6 +974,7 @@ mark.hl { background: rgba(240,165,0,0.3); color: var(--gold2); border-radius: 3
         <button class="filter-chip active" data-topic="all" onclick="browseSetTopic('all',this)">🗂 Tất cả</button>
         <button class="filter-chip" data-topic="noi_vu" onclick="browseSetTopic('noi_vu',this)">🏛 Nội vụ</button>
         <button class="filter-chip" data-topic="doi_ngu" onclick="browseSetTopic('doi_ngu',this)">🎖 Đội ngũ</button>
+        <button class="filter-chip" data-topic="nghi_le" onclick="browseSetTopic('nghi_le',this)">🎗 Nghi lễ</button>
         <button class="filter-chip" data-topic="xu_ly" onclick="browseSetTopic('xu_ly',this)">⚖️ Xử lý</button>
       </div>
     </div>
@@ -1008,6 +1009,13 @@ mark.hl { background: rgba(240,165,0,0.3); color: var(--gold2); border-radius: 3
         <div class="form-panel-body">
         <div class="field-label">Nội dung câu hỏi</div>
         <textarea class="field-input" id="f-q" rows="3" placeholder="Nhập nội dung câu hỏi..."></textarea>
+        <div class="field-label">Nhóm câu hỏi</div>
+        <select class="field-input" id="f-topic">
+          <option value="noi_vu">Điều lệnh nội vụ</option>
+          <option value="doi_ngu">Điều lệnh đội ngũ</option>
+          <option value="nghi_le">Nghi lễ</option>
+          <option value="xu_ly">Xử lý vi phạm</option>
+        </select>
         <div class="field-label">Đáp án A</div>
         <input type="text" class="field-input" id="f-a" placeholder="Đáp án A...">
         <div class="field-label">Đáp án B</div>
@@ -1035,52 +1043,14 @@ mark.hl { background: rgba(240,165,0,0.3); color: var(--gold2); border-radius: 3
   <div class="screen" id="settings-screen">
     <div class="topbar">
       <button class="btn-icon" onclick="goBack()">‹</button>
-      <span class="topbar-title">Cài đặt cơ cấu đề</span>
+      <span class="topbar-title">Thông tin đề thi</span>
       <span></span>
     </div>
     <div class="scroll-body">
       <div class="settings-card">
-        <h3>📋 Cơ cấu đề thi — Tỉ lệ % (tổng 20 câu)</h3>
-
-        <div class="pct-row">
-          <div class="pct-label-row">
-            <span class="pct-topic">🏛️ Điều Lệnh Nội vụ</span>
-            <span class="pct-badge" id="badge-nv">40%</span>
-          </div>
-          <input type="range" class="pct-slider" id="s-nv" min="0" max="100" step="5" value="40" oninput="updatePct()">
-        </div>
-
-        <div class="pct-row">
-          <div class="pct-label-row">
-            <span class="pct-topic">🎖️ Đội ngũ &amp; Nghi lễ</span>
-            <span class="pct-badge" id="badge-dn">20%</span>
-          </div>
-          <input type="range" class="pct-slider" id="s-dn" min="0" max="100" step="5" value="20" oninput="updatePct()">
-        </div>
-
-        <div class="pct-row">
-          <div class="pct-label-row">
-            <span class="pct-topic">⚖️ Xử lý vi phạm</span>
-            <span class="pct-badge" id="badge-xl">40%</span>
-          </div>
-          <input type="range" class="pct-slider" id="s-xl" min="0" max="100" step="5" value="40" oninput="updatePct()">
-        </div>
-
-        <div class="pct-bar-wrap">
-          <div class="pct-bar-seg" id="bar-nv" style="width:40%;background:var(--blue2)"></div>
-          <div class="pct-bar-seg" id="bar-dn" style="width:20%;background:var(--gold)"></div>
-          <div class="pct-bar-seg" id="bar-xl" style="width:40%;background:var(--green2)"></div>
-        </div>
-
-        <div class="settings-total">
-          Tổng: <span id="total-pct" style="color:var(--gold)">100%</span> &nbsp;→&nbsp; <span id="total-display" style="color:var(--gold)">20</span> câu
-        </div>
+        <h3>📋 Thi thử — 15 câu trong 15 phút</h3>
+        <div style="font-size:13px;line-height:1.8;color:var(--light)">5 câu Điều lệnh nội vụ<br>5 câu Điều lệnh đội ngũ<br>5 câu Nghi lễ</div>
       </div>
-      <button class="mb-btn" style="background:linear-gradient(135deg,#1a6b3c,var(--green))" onclick="saveSettings()">💾 LƯU & XUẤT FILE GITHUB</button>
-      <div style="margin-top:10px;font-size:11px;color:var(--grey);text-align:center;padding:0 16px;">
-        Sau khi lưu, bạn sẽ nhận được nội dung file <code style="color:var(--gold)">settings.json</code> để đăng lên GitHub — áp dụng ngay cho tất cả mọi người.
-      </div>
-
       <!-- QUẢN LÝ CÂU HỎI -->
       <button class="btn-main btn-admin" style="margin-top:14px;width:100%;border-radius:var(--radius)" onclick="gotoScreen('admin-screen')">
         <span class="btn-icon-big">⚙️</span>
@@ -1147,10 +1117,9 @@ mark.hl { background: rgba(240,165,0,0.3); color: var(--gold2); border-radius: 3
 // ═══════════════════════════════════════════════════════════════
 //  CONSTANTS & CONFIG
 // ═══════════════════════════════════════════════════════════════
-const APP_VERSION = '3.2';
+const APP_VERSION = '3.3';
 const GITHUB_DATA_URL     = './data_quiz.json';
 const GITHUB_VER_URL      = './version.txt';
-const GITHUB_SETTINGS_URL = './settings.json';
 // ═══════════════════════════════════════════════════════════════
 
 // ═══════════════════════════════════════════════════════════════
@@ -1158,7 +1127,6 @@ const GITHUB_SETTINGS_URL = './settings.json';
 // ═══════════════════════════════════════════════════════════════
 let allQuestions = [];
 let dataVersion  = 'N/A';
-let topicCounts  = { noi_vu: 40, doi_ngu: 20, xu_ly: 40 }; // stored as %
 
 let quizQueue    = [];   // array, index 0 = current
 let currentIndex = 0;    // vị trí câu hiện tại (cho chế độ all/tt113)
@@ -1185,7 +1153,6 @@ function saveLocal() {
   try {
     const raw = { version: dataVersion, questions: allQuestions };
     localStorage.setItem('quiz_data', JSON.stringify(raw));
-    localStorage.setItem('quiz_settings', JSON.stringify(topicCounts));
   } catch(e) {}
 }
 function loadLocal() {
@@ -1199,13 +1166,6 @@ function loadLocal() {
       } else if (Array.isArray(parsed)) {
         allQuestions = parsed;
       }
-    }
-    const st = localStorage.getItem('quiz_settings');
-    if (st) {
-      const loaded = JSON.parse(st);
-      // Nếu giá trị cũ là số câu (<=20) thì bỏ qua, dùng mặc định %
-      const isPercent = (loaded.noi_vu + loaded.doi_ngu + loaded.xu_ly) > 20;
-      if (isPercent) topicCounts = { ...topicCounts, ...loaded };
     }
   } catch(e) {}
 }
@@ -1249,11 +1209,6 @@ function updateMenuUI() {
   document.getElementById('app-ver').textContent   = APP_VERSION;
   document.getElementById('data-ver').textContent  = dataVersion;
   document.getElementById('q-count-badge').textContent = allQuestions.length + ' câu';
-  document.getElementById('s-nv').value = topicCounts.noi_vu;
-  document.getElementById('s-dn').value = topicCounts.doi_ngu;
-  document.getElementById('s-xl').value = topicCounts.xu_ly;
-  updateTotal();
-  if (typeof _updateSettingsLabel === 'function') _updateSettingsLabel();
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1329,26 +1284,29 @@ function startQuiz(mode) {
     clearInterval(timerInterval);
     document.getElementById('timer-display').textContent = '';
   } else if (mode === 'exam') {
-    // Phân loại theo topic
-    const tm = { noi_vu:[], doi_ngu:[], xu_ly:[] };
+    const tm = { noi_vu:[], doi_ngu:[], nghi_le:[] };
     for (const q of allQuestions) {
       const cat = (q[5]||'noi_vu').toLowerCase().trim();
-      if (tm[cat]) tm[cat].push(q); else tm.noi_vu.push(q);
+      if (tm[cat]) tm[cat].push(q);
+    }
+    const examCounts = { noi_vu:5, doi_ngu:5, nghi_le:5 };
+    const missing = Object.entries(examCounts).filter(([topic, needed]) => tm[topic].length < needed);
+    if (missing.length) {
+      showToast('Chưa đủ câu hỏi cho đề thi. Hãy cập nhật câu hỏi.');
+      return;
     }
     let selected = [];
-    const examCounts = pctToCounts(topicCounts.noi_vu, topicCounts.doi_ngu, topicCounts.xu_ly);
     for (const [topic, needed] of Object.entries(examCounts)) {
       const pool = shuffle([...tm[topic]]);
       selected.push(...pool.slice(0, needed));
     }
-    if (!selected.length) selected = shuffle([...allQuestions]).slice(0, 20);
     examAllQuestions = shuffle(selected);
     examAnswered     = {};
     examTemp         = {};
     examCurrentIdx   = 0;
     quizQueue  = [...examAllQuestions];
     totalCount = examAllQuestions.length;
-    timerVal   = 6 * 60;
+    timerVal   = 15 * 60;
     primeMusic();
     startTimer();
   } else {
@@ -1769,6 +1727,7 @@ function adminSelect(idx) {
   document.getElementById('f-a').value = q[1];
   document.getElementById('f-b').value = q[2];
   document.getElementById('f-c').value = q[3];
+  document.getElementById('f-topic').value = q[5] || 'noi_vu';
   selectAns(q[4]);
   document.getElementById('form-mode-label').textContent = `📝 CẬP NHẬT câu #${idx+1}`;
   // Auto-open form panel when a question is selected
@@ -1789,7 +1748,7 @@ function validateForm() {
   const b = document.getElementById('f-b').value.trim();
   const c = document.getElementById('f-c').value.trim();
   if (!q||!a||!b||!c) { showToast('Vui lòng điền đầy đủ câu hỏi và 3 đáp án!'); return null; }
-  return [q, a, b, c, answerIdx, 'noi_vu'];
+  return [q, a, b, c, answerIdx, document.getElementById('f-topic').value];
 }
 
 function adminAdd() {
@@ -1823,184 +1782,13 @@ function resetForm() {
   document.getElementById('f-a').value = '';
   document.getElementById('f-b').value = '';
   document.getElementById('f-c').value = '';
+  document.getElementById('f-topic').value = 'noi_vu';
   selectAns(0);
   document.getElementById('form-mode-label').textContent = '📝 THÊM / SỬA CÂU HỎI';
   refreshAdminList();
 }
 
 // ═══════════════════════════════════════════════════════════════
-
-// ═══════════════════════════════════════════════════════════════
-//  SETTINGS
-// ═══════════════════════════════════════════════════════════════
-// Convert % ratios -> integer counts summing to exactly 20
-function pctToCounts(pNv, pDn, pXl) {
-  const total = 20;
-  const sum = pNv + pDn + pXl;
-  if (sum === 0) return { noi_vu: 7, doi_ngu: 6, xu_ly: 7 };
-  let cNv = Math.floor(pNv / sum * total);
-  let cDn = Math.floor(pDn / sum * total);
-  let cXl = Math.floor(pXl / sum * total);
-  const rem = total - cNv - cDn - cXl;
-  const fracs = [
-    { key: 'nv', f: (pNv / sum * total) - cNv },
-    { key: 'dn', f: (pDn / sum * total) - cDn },
-    { key: 'xl', f: (pXl / sum * total) - cXl },
-  ].sort((a, b) => b.f - a.f);
-  for (let i = 0; i < rem; i++) {
-    if (fracs[i].key === 'nv') cNv++;
-    else if (fracs[i].key === 'dn') cDn++;
-    else cXl++;
-  }
-  return { noi_vu: cNv, doi_ngu: cDn, xu_ly: cXl };
-}
-
-function updatePct() {
-  const pNv = parseInt(document.getElementById('s-nv').value) || 0;
-  const pDn = parseInt(document.getElementById('s-dn').value) || 0;
-  const pXl = parseInt(document.getElementById('s-xl').value) || 0;
-  const sumPct = pNv + pDn + pXl;
-  const counts = pctToCounts(pNv, pDn, pXl);
-  document.getElementById('badge-nv').textContent = pNv + '%';
-  document.getElementById('badge-dn').textContent = pDn + '%';
-  document.getElementById('badge-xl').textContent = pXl + '%';
-  const safeSum = sumPct || 1;
-  document.getElementById('bar-nv').style.width = (pNv / safeSum * 100) + '%';
-  document.getElementById('bar-dn').style.width = (pDn / safeSum * 100) + '%';
-  document.getElementById('bar-xl').style.width = (pXl / safeSum * 100) + '%';
-  const totalEl = document.getElementById('total-pct');
-  const dispEl  = document.getElementById('total-display');
-  totalEl.textContent = sumPct + '%';
-  totalEl.style.color = sumPct === 100 ? 'var(--gold)' : '#e74c3c';
-  dispEl.textContent  = counts.noi_vu + counts.doi_ngu + counts.xu_ly;
-  dispEl.style.color  = 'var(--gold)';
-}
-
-function updateTotal() { updatePct(); }
-
-// Tải cài đặt cơ cấu đề từ GitHub (ghi đè localStorage nếu có)
-function loadRemoteSettings() {
-  fetch(GITHUB_SETTINGS_URL + '?t=' + Date.now())
-    .then(r => { if (!r.ok) throw new Error('no settings'); return r.json(); })
-    .then(data => {
-      if (data && typeof data.noi_vu === 'number' && typeof data.doi_ngu === 'number' && typeof data.xu_ly === 'number') {
-        topicCounts = { noi_vu: data.noi_vu, doi_ngu: data.doi_ngu, xu_ly: data.xu_ly };
-        // Lưu lại localStorage để dùng offline
-        try { localStorage.setItem('quiz_settings', JSON.stringify(topicCounts)); } catch(e) {}
-        updateMenuUI();
-        // Cập nhật label nút menu
-        _updateSettingsLabel();
-      }
-    })
-    .catch(() => {}); // im lặng nếu chưa có file hoặc lỗi mạng
-}
-
-function _updateSettingsLabel() {
-  const btn = document.querySelector('.btn-settings .btn-label');
-  if (btn) {
-    btn.innerHTML = `CÀI ĐẶT CƠ CẤU ĐỀ<br><small style="font-weight:400;opacity:0.8">${topicCounts.noi_vu}% Nội vụ · ${topicCounts.doi_ngu}% Đội ngũ · ${topicCounts.xu_ly}% Xử lý</small>`;
-  }
-}
-
-function saveSettings() {
-  const pNv = parseInt(document.getElementById('s-nv').value) || 0;
-  const pDn = parseInt(document.getElementById('s-dn').value) || 0;
-  const pXl = parseInt(document.getElementById('s-xl').value) || 0;
-  const sumPct = pNv + pDn + pXl;
-  if (sumPct !== 100) {
-    showToast('Tổng tỉ lệ phải bằng 100%! (Hiện: ' + sumPct + '%)');
-    return;
-  }
-  topicCounts = { noi_vu: pNv, doi_ngu: pDn, xu_ly: pXl };
-  saveLocal();
-  _updateSettingsLabel();
-  const counts = pctToCounts(pNv, pDn, pXl);
-  // Hiện popup hướng dẫn đăng lên GitHub
-  showSettingsExport(topicCounts, counts);
-}
-
-function showSettingsExport(tc, counts) {
-  const json = JSON.stringify(tc, null, 2);
-  // Tạo hoặc tái sử dụng popup export
-  let overlay = document.getElementById('settings-export-overlay');
-  if (!overlay) {
-    overlay = document.createElement('div');
-    overlay.id = 'settings-export-overlay';
-    overlay.style.cssText = `
-      display:none; position:fixed; inset:0; z-index:1300;
-      background:rgba(13,27,42,0.96);
-      align-items:center; justify-content:center; padding:20px;
-      flex-direction:column; gap:0;
-    `;
-    document.body.appendChild(overlay);
-  }
-  overlay.innerHTML = `
-    <div style="
-      background:var(--card); border:1px solid var(--gold);
-      border-radius:18px; width:100%; max-width:440px;
-      padding:22px 20px 18px; box-shadow:0 8px 40px rgba(0,0,0,0.7);
-      display:flex; flex-direction:column; gap:14px;
-    ">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <span style="font-size:22px;">📤</span>
-        <span style="font-family:var(--font-display);font-size:15px;font-weight:700;color:var(--gold);letter-spacing:0.5px;">ĐÃ LƯU · ĐĂNG LÊN GITHUB</span>
-      </div>
-      <div style="font-size:13px;color:var(--light);line-height:1.7;">
-        Cơ cấu: <b style="color:var(--gold)">${tc.noi_vu}%</b> Nội vụ (${counts.noi_vu} câu) · 
-        <b style="color:var(--gold)">${tc.doi_ngu}%</b> Đội ngũ (${counts.doi_ngu} câu) · 
-        <b style="color:var(--gold)">${tc.xu_ly}%</b> Xử lý (${counts.xu_ly} câu)<br><br>
-        Để áp dụng cho <b style="color:var(--white)">tất cả mọi người</b>, hãy copy nội dung bên dưới và lưu thành file <code style="color:var(--gold);font-size:12px;">settings.json</code> trên GitHub repo:
-      </div>
-      <div style="position:relative;">
-        <pre id="settings-json-pre" style="
-          background:var(--navy); border:1px solid var(--border);
-          border-radius:10px; padding:14px; font-size:13px;
-          color:var(--green2); font-family:monospace;
-          white-space:pre; overflow-x:auto; margin:0;
-          user-select:all; -webkit-user-select:all;
-        ">${json}</pre>
-        <button onclick="copySettingsJson()" style="
-          position:absolute; top:8px; right:8px;
-          background:var(--gold); border:none; border-radius:6px;
-          font-size:11px; font-weight:700; color:var(--navy);
-          padding:5px 10px; cursor:pointer;
-        " id="copy-settings-btn">📋 Copy</button>
-      </div>
-      <div style="font-size:11px;color:var(--grey);line-height:1.6;">
-        📌 Đường dẫn file: <code style="color:var(--gold)">settings.json</code> (cùng thư mục với data_quiz.json)<br>
-        Sau khi đăng lên GitHub, tất cả người dùng sẽ tải cơ cấu mới khi mở app.
-      </div>
-      <button onclick="document.getElementById('settings-export-overlay').style.display='none';" style="
-        background:linear-gradient(135deg,#1a6b3c,var(--green));
-        border:none; border-radius:10px; padding:13px;
-        font-family:var(--font-main); font-size:14px; font-weight:700;
-        color:var(--white); cursor:pointer; width:100%;
-        -webkit-tap-highlight-color:transparent;
-      ">✓ Đã hiểu, đóng</button>
-    </div>
-  `;
-  overlay.style.display = 'flex';
-}
-
-function copySettingsJson() {
-  const pre = document.getElementById('settings-json-pre');
-  const btn = document.getElementById('copy-settings-btn');
-  if (!pre) return;
-  try {
-    navigator.clipboard.writeText(pre.textContent).then(() => {
-      btn.textContent = '✅ Đã copy!';
-      setTimeout(() => { btn.textContent = '📋 Copy'; }, 2000);
-    });
-  } catch(e) {
-    // fallback
-    const sel = window.getSelection();
-    const range = document.createRange();
-    range.selectNodeContents(pre);
-    sel.removeAllRanges();
-    sel.addRange(range);
-    showToast('Hãy nhấn giữ và chọn Copy!');
-  }
-}
 
 // ═══════════════════════════════════════════════════════════════
 //  BROWSE SCREEN
@@ -2042,7 +1830,8 @@ function escHtml(s) {
 }
 
 function topicLabel(t) {
-  if (t === 'doi_ngu') return '🎖 Đội ngũ & Nghi lễ';
+  if (t === 'doi_ngu') return '🎖 Điều lệnh Đội ngũ';
+  if (t === 'nghi_le') return '🎗 Nghi lễ';
   if (t === 'xu_ly')   return '⚖️ Xử lý vi phạm';
   return '🏛 Điều lệnh Nội vụ';
 }
@@ -2212,14 +2001,12 @@ window.addEventListener('load', () => {
   if (HARD_LOCK_ENABLED) showHardLock();
   loadLocal();
   updateMenuUI();
-  // Tải cài đặt cơ cấu đề từ GitHub (áp dụng cho tất cả)
-  loadRemoteSettings();
   // Kiểm tra update ngầm
   setTimeout(checkRemoteVersion, 2000);
   // Hiện thông báo nếu được bật
 
   // Nếu chưa có câu hỏi, tự động tải
-  if (!allQuestions.length) {
+  if (!allQuestions.length || !allQuestions.some(q => q[5] === 'nghi_le')) {
     showLoading('Đang tải câu hỏi lần đầu...');
     const cb = '?t=' + Date.now();
     fetch(GITHUB_DATA_URL + cb)
