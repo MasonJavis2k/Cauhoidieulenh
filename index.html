@@ -329,6 +329,23 @@ html, body {
 
 .quiz-actions { display: flex; gap: 10px; flex-shrink: 0; padding: 0 16px 16px; }
 
+.exam-confirm-overlay {
+  position: fixed; inset: 0; z-index: 1200;
+  display: none; align-items: center; justify-content: center;
+  background: rgba(5,9,15,0.88); padding: 20px;
+}
+.exam-confirm-card {
+  width: 100%; max-width: 420px; padding: 24px;
+  border-radius: var(--radius); background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+}
+.exam-confirm-message {
+  color: var(--light); font-size: 14px; line-height: 1.7;
+  white-space: pre-line; margin-bottom: 20px;
+}
+.exam-confirm-buttons { display: flex; gap: 10px; }
+
 .btn-action {
   flex: 1; padding: 14px;
   border: none; border-radius: var(--radius);
@@ -850,7 +867,7 @@ mark.hl { background: rgba(240,165,0,0.3); color: var(--gold2); border-radius: 3
       <div class="menu-buttons">
         <button class="btn-main btn-exam" onclick="startQuiz('exam')">
           <span class="btn-icon-big">🔥</span>
-          <span class="btn-label">THI THỬ<br><small style="font-weight:400;opacity:0.8">15 câu · 15 phút · 5 Nội vụ / 5 Đội ngũ / 5 Nghi lễ</small></span>
+          <span class="btn-label">THI THỬ<br><small style="font-weight:400;opacity:0.8">20 câu · 10 phút · 5 câu mỗi nhóm</small></span>
           <span class="btn-arrow">›</span>
         </button>
         <button class="btn-main btn-tt113" onclick="startQuiz('tt113')">
@@ -876,7 +893,7 @@ mark.hl { background: rgba(240,165,0,0.3); color: var(--gold2); border-radius: 3
         </button>
         <button class="btn-main btn-settings" onclick="gotoScreen('settings-screen')">
           <span class="btn-icon-big">🗂️</span>
-          <span class="btn-label" id="settings-btn-label">THÔNG TIN ĐỀ THI<br><small style="font-weight:400;opacity:0.8">5 Nội vụ · 5 Đội ngũ · 5 Nghi lễ</small></span>
+          <span class="btn-label" id="settings-btn-label">THÔNG TIN ĐỀ THI<br><small style="font-weight:400;opacity:0.8">Nội vụ · Đội ngũ · Nghi lễ · TT 113</small></span>
           <span class="btn-arrow">›</span>
         </button>
       </div>
@@ -896,7 +913,7 @@ mark.hl { background: rgba(240,165,0,0.3); color: var(--gold2); border-radius: 3
     <div class="topbar">
       <button class="btn-icon" onclick="exitQuiz()">✕</button>
       <span class="topbar-title" id="quiz-title">Thi thử</span>
-      <span id="timer-display" style="font-size:16px;font-weight:700;color:var(--gold2)">15:00</span>
+      <span id="timer-display" style="font-size:16px;font-weight:700;color:var(--gold2)">10:00</span>
     </div>
 
     <div class="quiz-progress-bar">
@@ -1048,8 +1065,8 @@ mark.hl { background: rgba(240,165,0,0.3); color: var(--gold2); border-radius: 3
     </div>
     <div class="scroll-body">
       <div class="settings-card">
-        <h3>📋 Thi thử — 15 câu trong 15 phút</h3>
-        <div style="font-size:13px;line-height:1.8;color:var(--light)">5 câu Điều lệnh nội vụ<br>5 câu Điều lệnh đội ngũ<br>5 câu Nghi lễ</div>
+        <h3>📋 Thi thử — 20 câu trong 10 phút</h3>
+        <div style="font-size:13px;line-height:1.8;color:var(--light)">5 câu Điều lệnh nội vụ<br>5 câu Điều lệnh đội ngũ<br>5 câu Nghi lễ<br>5 câu Thông tư 113</div>
       </div>
       <!-- QUẢN LÝ CÂU HỎI -->
       <button class="btn-main btn-admin" style="margin-top:14px;width:100%;border-radius:var(--radius)" onclick="gotoScreen('admin-screen')">
@@ -1069,6 +1086,17 @@ mark.hl { background: rgba(240,165,0,0.3); color: var(--gold2); border-radius: 3
 
   <!-- ══════════ TT113 HINT POPUP ══════════ -->
 </div><!-- #app -->
+
+<!-- Exam submission confirmation -->
+<div class="exam-confirm-overlay" id="exam-confirm-overlay" role="dialog" aria-modal="true" aria-label="Xác nhận nộp bài">
+  <div class="exam-confirm-card">
+    <div class="exam-confirm-message" id="exam-confirm-msg"></div>
+    <div class="exam-confirm-buttons">
+      <button class="btn-action muted" id="exam-confirm-cancel">LÀM TIẾP</button>
+      <button class="btn-action danger" id="exam-confirm-ok">NỘP BÀI</button>
+    </div>
+  </div>
+</div>
 
 <!-- Detail Popup -->
 <div class="popup-overlay" id="detail-popup" onclick="closePopup(event)">
@@ -1117,7 +1145,7 @@ mark.hl { background: rgba(240,165,0,0.3); color: var(--gold2); border-radius: 3
 // ═══════════════════════════════════════════════════════════════
 //  CONSTANTS & CONFIG
 // ═══════════════════════════════════════════════════════════════
-const APP_VERSION = '3.5';
+const APP_VERSION = '3.7';
 const GITHUB_DATA_URL = 'https://raw.githubusercontent.com/MasonJavis2k/Cauhoidieulenh/main/data_quiz.json';
 const GITHUB_VER_URL = 'https://raw.githubusercontent.com/MasonJavis2k/Cauhoidieulenh/main/version.txt';
 // ═══════════════════════════════════════════════════════════════
@@ -1173,8 +1201,12 @@ function loadLocal() {
 function hasExamQuestions(questions) {
   if (!Array.isArray(questions)) return false;
   return ['noi_vu', 'doi_ngu', 'nghi_le'].every(topic =>
-    questions.filter(q => q[5] === topic).length >= 5
-  );
+    questions.filter(q => !isTT113Question(q) && q[5] === topic).length >= 5
+  ) && questions.filter(isTT113Question).length >= 5;
+}
+
+function isTT113Question(q) {
+  return typeof q[0] === 'string' && q[0].includes('113');
 }
 
 function prepareQuestions(data) {
@@ -1295,7 +1327,7 @@ function startQuiz(mode) {
   isAnswered  = false;
 
   if (mode === 'tt113') {
-    quizQueue  = allQuestions.filter(q => q[0] && q[0].includes('113'));
+    quizQueue  = allQuestions.filter(isTT113Question);
     if (!quizQueue.length) { showToast('Không tìm thấy câu hỏi Thông tư 113!'); return; }
     quizQueue  = shuffle([...quizQueue]);
     totalCount = quizQueue.length;
@@ -1304,12 +1336,13 @@ function startQuiz(mode) {
     clearInterval(timerInterval);
     document.getElementById('timer-display').textContent = '';
   } else if (mode === 'exam') {
-    const tm = { noi_vu:[], doi_ngu:[], nghi_le:[] };
+    const tm = { noi_vu:[], doi_ngu:[], nghi_le:[], tt113:[] };
     for (const q of allQuestions) {
+      if (isTT113Question(q)) { tm.tt113.push(q); continue; }
       const cat = (q[5]||'noi_vu').toLowerCase().trim();
       if (tm[cat]) tm[cat].push(q);
     }
-    const examCounts = { noi_vu:5, doi_ngu:5, nghi_le:5 };
+    const examCounts = { noi_vu:5, doi_ngu:5, nghi_le:5, tt113:5 };
     const missing = Object.entries(examCounts).filter(([topic, needed]) => tm[topic].length < needed);
     if (missing.length) {
       showToast('Chưa đủ câu hỏi cho đề thi. Hãy cập nhật câu hỏi.');
@@ -1326,7 +1359,7 @@ function startQuiz(mode) {
     examCurrentIdx   = 0;
     quizQueue  = [...examAllQuestions];
     totalCount = examAllQuestions.length;
-    timerVal   = 15 * 60;
+    timerVal   = 10 * 60;
     primeMusic();
     startTimer();
   } else {
@@ -1589,6 +1622,7 @@ function showExamConfirmDialog(msg, onConfirm) {
 }
 
 function exitQuiz() {
+  document.getElementById('exam-confirm-overlay').style.display = 'none';
   clearInterval(timerInterval);
   timerInterval = null;
   stopMusic();
@@ -1596,6 +1630,7 @@ function exitQuiz() {
 }
 
 function finishQuiz() {
+  document.getElementById('exam-confirm-overlay').style.display = 'none';
   clearInterval(timerInterval);
   timerInterval = null;
   stopMusic();
